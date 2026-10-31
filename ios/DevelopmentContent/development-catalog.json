@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "packageId": "development-reading-v1",
+  "kind": "development",
+  "laws": [
+    {
+      "id": "criminal",
+      "title": "刑法篇",
+      "subtitle": "认识行为的边界",
+      "symbol": "leaf"
+    },
+    {
+      "id": "civil",
+      "title": "民法篇",
+      "subtitle": "过日子的规则",
+      "symbol": "house"
+    },
+    {
+      "id": "public_security",
+      "title": "治安篇",
+      "subtitle": "身边的公共秩序",
+      "symbol": "sun.max"
+    }
+  ],
+  "articles": [
+    {
+      "reference": {
+        "lawId": "criminal",
+        "lawVersionId": "development-v1",
+        "editionId": "synthetic-r1",
+        "articleKey": "1"
+      },
+      "number": "第一条",
+      "title": "看见一条结论，先问出处",
+      "text": "【开发阅读说明，非法律原文】\n\n阅读信息之前，先确认来源。\n\n本条仅用于验证应用的阅读、引用、收藏和测验流程，不表达法律规则，也不对应任何真实法条。",
+      "source": "识法开发测试样例 · 非官方法律内容",
+      "versionLabel": "开发样例 v1 · 非施行版本"
+    },
+    {
+      "reference": {
+        "lawId": "criminal",
+        "lawVersionId": "development-v1",
+        "editionId": "synthetic-r1",
+        "articleKey": "2"
+      },
+      "number": "第二条",
+      "title": "一个场景，能代替所有情况吗",
+      "text": "【开发阅读说明，非法律原文】\n\n情境只用来帮助理解，不代表全部情况。\n\n本条仅用于验证应用的阅读、引用、收藏和测验流程，不表达法律规则，也不对应任何真实法条。",
+      "source": "识法开发测试样例 · 非官方法律内容",
+      "versionLabel": "开发样例 v1 · 非施行版本"
+    },
+    {
+      "reference": {
+        "lawId": "civil",
+        "lawVersionId": "development-v1",
+        "editionId": "synthetic-r1",
+        "articleKey": "1"
+      },
+      "number": "第一条",
+      "title": "读到“定金”，先看完整上下文",
+      "text": "【开发阅读说明，非法律原文】\n\n理解一个词，需要保留它的上下文。\n\n本条仅用于验证应用的阅读、引用、收藏和测验流程，不表达法律规则，也不对应任何真实法条。",
+      "source": "识法开发测试样例 · 非官方法律内容",
+      "versionLabel": "开发样例 v1 · 非施行版本"
+    },
+    {
+      "reference": {
+        "lawId": "civil",
+        "lawVersionId": "development-v1",
+        "editionId": "synthetic-r1",
+        "articleKey": "2"
+      },
+      "number": "第二条",
+      "title": "收藏以后，也别忘了版本",
+      "text": "【开发阅读说明，非法律原文】\n\n收藏的是特定版本的内容。\n\n本条仅用于验证应用的阅读、引用、收藏和测验流程，不表达法律规则，也不对应任何真实法条。",
+      "source": "识法开发测试样例 · 非官方法律内容",
+      "versionLabel": "开发样例 v1 · 非施行版本"
+    },
+    {
+      "reference": {
+        "lawId": "public_security",
+        "lawVersionId": "development-v1",
+        "editionId": "synthetic-r1",
+        "articleKey": "1"
+      },
+      "number": "第一条",
+      "title": "相同条号，就是同一条内容吗",
+      "text": "【开发阅读说明，非法律原文】\n\n查看条号时，也要确认所属篇目。\n\n本条仅用于验证应用的阅读、引用、收藏和测验流程，不表达法律规则，也不对应任何真实法条。",
+      "source": "识法开发测试样例 · 非官方法律内容",
+      "versionLabel": "开发样例 v1 · 非施行版本"
+    },
+    {
+      "reference": {
+        "lawId": "public_security",
+        "lawVersionId": "development-v1",
+        "editionId": "synthetic-r1",
+        "articleKey": "2"
+      },
+      "number": "第二条",
+      "title": "答错一题，接下来读什么",
+      "text": "【开发阅读说明，非法律原文】\n\n回到原文，理解答案的依据。\n\n本条仅用于验证应用的阅读、引用、收藏和测验流程，不表达法律规则，也不对应任何真实法条。",
+      "source": "识法开发测试样例 · 非官方法律内容",
+      "versionLabel": "开发样例 v1 · 非施行版本"
+    }
+  ],
+  "cards": [
+    {
+      "id": "demo-card-1",
+      "revision": 1,
+      "lawId": "criminal",
+      "topic": "读法入门",
+      "title": "看见一条结论，先问出处",
+      "conclusion": "阅读信息之前，先确认来源。",
+      "story": "小禾在浏览时看见两段相互矛盾的说法。她没有急着选择其中一段，而是先找到了两段文字的来源。",
+      "points": [
+        "阅读信息之前，先确认来源。",
+        "本页面是开发阅读示例，不用于判断任何实际法律问题。"
+      ],
+      "misconception": "阅读练习中的“第一条”“第二条”是样例编号，不是真实法律条号。",
+      "articleRefs": [
+        {
+          "lawId": "criminal",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "1"
+        }
+      ],
+      "questionId": "demo-question-1",
+      "minutes": 2
+    },
+    {
+      "id": "demo-card-2",
+      "revision": 1,
+      "lawId": "criminal",
+      "topic": "认识边界",
+      "title": "一个场景，能代替所有情况吗",
+      "conclusion": "情境只用来帮助理解，不代表全部情况。",
+      "story": "小禾读完一段场景故事，注意到故事里只描述了少数事实。她把疑问记下来，继续阅读完整说明。",
+      "points": [
+        "情境只用来帮助理解，不代表全部情况。",
+        "本页面是开发阅读示例，不用于判断任何实际法律问题。"
+      ],
+      "misconception": "阅读练习中的“第一条”“第二条”是样例编号，不是真实法律条号。",
+      "articleRefs": [
+        {
+          "lawId": "criminal",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "2"
+        }
+      ],
+      "questionId": "demo-question-2",
+      "minutes": 2
+    },
+    {
+      "id": "demo-card-3",
+      "revision": 1,
+      "lawId": "civil",
+      "topic": "日常往来",
+      "title": "读到“定金”，先看完整上下文",
+      "conclusion": "理解一个词，需要保留它的上下文。",
+      "story": "小禾查找一个陌生词。她先读完整段落，再点击关联条目，避免只凭截取的半句话作判断。",
+      "points": [
+        "理解一个词，需要保留它的上下文。",
+        "本页面是开发阅读示例，不用于判断任何实际法律问题。"
+      ],
+      "misconception": "阅读练习中的“第一条”“第二条”是样例编号，不是真实法律条号。",
+      "articleRefs": [
+        {
+          "lawId": "civil",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "1"
+        }
+      ],
+      "questionId": "demo-question-3",
+      "minutes": 2
+    },
+    {
+      "id": "demo-card-4",
+      "revision": 1,
+      "lawId": "civil",
+      "topic": "生活与居住",
+      "title": "收藏以后，也别忘了版本",
+      "conclusion": "收藏的是特定版本的内容。",
+      "story": "小禾把一页内容加入收藏。后来她再次打开时，先检查了页面上的版本说明。",
+      "points": [
+        "收藏的是特定版本的内容。",
+        "本页面是开发阅读示例，不用于判断任何实际法律问题。"
+      ],
+      "misconception": "阅读练习中的“第一条”“第二条”是样例编号，不是真实法律条号。",
+      "articleRefs": [
+        {
+          "lawId": "civil",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "2"
+        }
+      ],
+      "questionId": "demo-question-4",
+      "minutes": 2
+    },
+    {
+      "id": "demo-card-5",
+      "revision": 1,
+      "lawId": "public_security",
+      "topic": "公共生活",
+      "title": "相同条号，就是同一条内容吗",
+      "conclusion": "查看条号时，也要确认所属篇目。",
+      "story": "小禾搜索“第一条”，结果出现多个篇目。她先选定自己正在阅读的篇目，再进入详情。",
+      "points": [
+        "查看条号时，也要确认所属篇目。",
+        "本页面是开发阅读示例，不用于判断任何实际法律问题。"
+      ],
+      "misconception": "阅读练习中的“第一条”“第二条”是样例编号，不是真实法律条号。",
+      "articleRefs": [
+        {
+          "lawId": "public_security",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "1"
+        }
+      ],
+      "questionId": "demo-question-5",
+      "minutes": 2
+    },
+    {
+      "id": "demo-card-6",
+      "revision": 1,
+      "lawId": "public_security",
+      "topic": "学习方法",
+      "title": "答错一题，接下来读什么",
+      "conclusion": "回到原文，理解答案的依据。",
+      "story": "小禾做完一道阅读练习。看完解析后，她点击引用入口，重新阅读了题目对应的说明。",
+      "points": [
+        "回到原文，理解答案的依据。",
+        "本页面是开发阅读示例，不用于判断任何实际法律问题。"
+      ],
+      "misconception": "阅读练习中的“第一条”“第二条”是样例编号，不是真实法律条号。",
+      "articleRefs": [
+        {
+          "lawId": "public_security",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "2"
+        }
+      ],
+      "questionId": "demo-question-6",
+      "minutes": 2
+    }
+  ],
+  "questions": [
+    {
+      "id": "demo-question-1",
+      "revision": 1,
+      "prompt": "阅读时，应该先关注什么？",
+      "options": [
+        {
+          "id": "a",
+          "text": "来源和版本"
+        },
+        {
+          "id": "b",
+          "text": "转发次数"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "阅读信息之前，先确认来源。",
+      "cardId": "demo-card-1",
+      "articleRefs": [
+        {
+          "lawId": "criminal",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "1"
+        }
+      ]
+    },
+    {
+      "id": "demo-question-2",
+      "revision": 1,
+      "prompt": "场景故事可以代替完整规则吗？",
+      "options": [
+        {
+          "id": "a",
+          "text": "不可以"
+        },
+        {
+          "id": "b",
+          "text": "可以"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "情境只用来帮助理解，不代表全部情况。",
+      "cardId": "demo-card-2",
+      "articleRefs": [
+        {
+          "lawId": "criminal",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "2"
+        }
+      ]
+    },
+    {
+      "id": "demo-question-3",
+      "revision": 1,
+      "prompt": "哪种阅读方式更完整？",
+      "options": [
+        {
+          "id": "a",
+          "text": "读完整段落"
+        },
+        {
+          "id": "b",
+          "text": "只看几个字"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "理解一个词，需要保留它的上下文。",
+      "cardId": "demo-card-3",
+      "articleRefs": [
+        {
+          "lawId": "civil",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "1"
+        }
+      ]
+    },
+    {
+      "id": "demo-question-4",
+      "revision": 1,
+      "prompt": "收藏内容再次阅读时，应检查什么？",
+      "options": [
+        {
+          "id": "a",
+          "text": "版本说明"
+        },
+        {
+          "id": "b",
+          "text": "收藏按钮的颜色"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "收藏的是特定版本的内容。",
+      "cardId": "demo-card-4",
+      "articleRefs": [
+        {
+          "lawId": "civil",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "2"
+        }
+      ]
+    },
+    {
+      "id": "demo-question-5",
+      "revision": 1,
+      "prompt": "相同条号跨篇目时该如何选择？",
+      "options": [
+        {
+          "id": "a",
+          "text": "确认篇目再查看"
+        },
+        {
+          "id": "b",
+          "text": "随便选一个"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "查看条号时，也要确认所属篇目。",
+      "cardId": "demo-card-5",
+      "articleRefs": [
+        {
+          "lawId": "public_security",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "1"
+        }
+      ]
+    },
+    {
+      "id": "demo-question-6",
+      "revision": 1,
+      "prompt": "答错后，可以在哪里复习依据？",
+      "options": [
+        {
+          "id": "a",
+          "text": "题目的引用入口"
+        },
+        {
+          "id": "b",
+          "text": "无关页面"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "回到原文，理解答案的依据。",
+      "cardId": "demo-card-6",
+      "articleRefs": [
+        {
+          "lawId": "public_security",
+          "lawVersionId": "development-v1",
+          "editionId": "synthetic-r1",
+          "articleKey": "2"
+        }
+      ]
+    }
+  ]
+}
