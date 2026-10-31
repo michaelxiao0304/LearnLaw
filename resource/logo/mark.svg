@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="236 378 552 398" width="552" height="398" role="img" aria-label="识法 LawSense — Mark">
+  <title>识法 LawSense — Mark</title>
+  <g fill="#3A9D6E">
+      <path d="M497 752 L497 516 Q497 500 512 500 Q527 500 527 516 L527 752 Z"/>
+      <path d="M0 0 C -46 -50 -50 -124 0 -172 C 50 -124 46 -50 0 0 Z" transform="translate(512 506) rotate(-44)"/>
+      <path d="M0 0 C -46 -50 -50 -124 0 -172 C 50 -124 46 -50 0 0 Z" transform="translate(512 506) rotate(44)"/>
+      <path d="M494 620 C 400 611 310 605 250 606 Q 236 607 236 622 L 236 736 Q 236 750 250 751 C 310 758 400 768 484 776 Q 494 777 494 767 Z"/>
+      <path d="M530 620 C 624 611 714 605 774 606 Q 788 607 788 622 L 788 736 Q 788 750 774 751 C 714 758 624 768 540 776 Q 530 777 530 767 Z"/>
+  </g>
+</svg>
