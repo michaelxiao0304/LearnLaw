@@ -66,6 +66,8 @@ enum Route: Hashable {
 }
 
 struct RootTabs: View {
+    @Environment(Preferences.self) private var preferences
+    @Environment(UserStore.self) private var user
     @Environment(NotificationRouter.self) private var notificationRouter
     @State private var dailyPresented = false
     @Environment(AppModel.self) private var app
@@ -87,6 +89,7 @@ struct RootTabs: View {
                 FeatureNavigation { ProfileView(catalog: catalog) }.tabItem { Label("我的", systemImage: "person.crop.circle") }
             }
         }.background(Color.paper)
+        .onChange(of: ObjectIdentifier(user), initial: true) { _, _ in user.recordsStudyDays = preferences.recordsStudyDays }
         .onChange(of: notificationRouter.openDaily, initial: true) { _, open in
             if open { app.refreshDay(); dailyPresented = true; notificationRouter.openDaily = false }
         }

@@ -24,6 +24,10 @@ struct PracticeView: View {
                     }
                 }
             }.buttonStyle(.plain)
+            if let plan = app.coursePlan {
+                NavigationLink("学习路径与称号") { CourseListView(plan: plan, catalog: catalog) }
+                    .buttonStyle(.borderedProminent)
+            }
             SectionHeading(title: "随时练一练")
             ForEach(catalog.questions) { question in
                 NavigationLink(value: Route.quiz(question.id, "practice")) {
@@ -44,15 +48,20 @@ struct QuizView: View {
     let question: Question
     let mode: String
     let catalog: ContentCatalog
+    private let onSelection: ((String) -> Void)?
+    private let onContinue: (() -> Void)?
     @State private var attemptID: String
     @State private var selected: String?
     @State private var saved: SavedAttempt?
     @State private var completed = false
     @AccessibilityFocusState private var resultFocused: Bool
 
-    init(question: Question, mode: String, catalog: ContentCatalog) {
+    init(question: Question, mode: String, catalog: ContentCatalog, attemptID: String? = nil,
+         initialSelection: String? = nil, onSelection: ((String) -> Void)? = nil, onContinue: (() -> Void)? = nil) {
         self.question = question; self.mode = mode; self.catalog = catalog
-        _attemptID = State(initialValue: mode == "daily" ? "daily:\(LearningRules.dayKey(.now, timeZone: .current)):\(question.identity)" : UUID().uuidString)
+        self.onSelection = onSelection; self.onContinue = onContinue
+        _selected = State(initialValue: initialSelection)
+        _attemptID = State(initialValue: attemptID ?? (mode == "daily" ? "daily:\(LearningRules.dayKey(.now, timeZone: .current)):\(question.identity)" : UUID().uuidString))
     }
     var body: some View {
         Page(lazy: true) {
@@ -61,7 +70,7 @@ struct QuizView: View {
             Text(question.prompt).font(.title.bold()).fixedSize(horizontal: false, vertical: true)
             Text("选择一个答案").font(.subheadline).foregroundStyle(.secondary)
             ForEach(question.options) { option in
-                Button { selected = option.id } label: {
+                Button { selected = option.id; onSelection?(option.id) } label: {
                     HStack(alignment: .top, spacing: 14) {
                         Image(systemName: selected == option.id ? "checkmark.circle.fill" : "circle").foregroundStyle(Color.bamboo)
                         Text(option.text).foregroundStyle(.primary).frame(maxWidth: .infinity, alignment: .leading)
@@ -90,6 +99,7 @@ struct QuizView: View {
                     }.buttonStyle(PrimaryAction()).disabled(completed).accessibilityIdentifier("finish-learning")
                     NavigationLink("回到知识卡复习", value: Route.card(card.id)).frame(maxWidth: .infinity).padding(12)
                 }
+                if let onContinue { Button("继续关卡", action: onContinue).buttonStyle(PrimaryAction()).accessibilityIdentifier("course-next") }
                 DisclaimerFooter()
             } else {
                 Button("提交答案", action: submit).buttonStyle(PrimaryAction()).disabled(selected == nil).accessibilityIdentifier("submit-answer")

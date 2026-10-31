@@ -77,6 +77,9 @@ struct SettingsView: View {
                 NavigationLink("隐私政策与本地数据说明") { PrivacyPolicyView() }
             }
             Section("本地记录管理") {
+                Toggle("记录学习日期与连续天数", isOn: $preferences.recordsStudyDays)
+                    .onChange(of: preferences.recordsStudyDays) { _, enabled in user.recordsStudyDays = enabled }
+                Text("关闭后不再新增学习日期；收藏、答题、错题和关卡进度仍按功能需要在本机保存。已有记录可在下方清除。").font(.footnote)
                 Button("清除学习记录", role: .destructive) { clearingLearning = true }
                     .disabled(user.isReadOnly)
                 Button("清除全部收藏", role: .destructive) { clearingBookmarks = true }

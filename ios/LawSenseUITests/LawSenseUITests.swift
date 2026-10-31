@@ -119,6 +119,31 @@ final class LawSenseUITests: XCTestCase {
         XCTAssertFalse(app.buttons["打开邮件草稿"].exists)
     }
 
+    @MainActor func testCourseResumesAndUnlocksNextRank() {
+        let app = launchAndAccept()
+        app.tabBars.buttons["练习场"].tap()
+        let paths = app.buttons["学习路径与称号"]
+        for _ in 0..<6 where !paths.isHittable { app.swipeUp() }
+        paths.tap()
+        XCTAssertFalse(app.buttons["course-silver"].isEnabled)
+        app.buttons["course-bronze"].tap()
+        app.buttons["开始本关"].tap()
+        app.buttons["option-b"].tap()
+        app.navigationBars.buttons.firstMatch.tap()
+        app.buttons["course-bronze"].tap()
+        XCTAssertTrue(app.buttons["option-b"].isSelected)
+        for _ in 0..<2 {
+            app.buttons["option-a"].tap()
+            app.buttons["submit-answer"].tap()
+            let next = app.buttons["course-next"]
+            for _ in 0..<8 where !next.isHittable { app.swipeUp() }
+            XCTAssertTrue(next.isHittable); next.tap()
+        }
+        XCTAssertTrue(app.staticTexts["本关已通过"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(app.buttons["course-silver"].isEnabled)
+    }
+
     @MainActor private func capture(_ app: XCUIApplication, name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
