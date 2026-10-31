@@ -63,6 +63,10 @@ import Observation
 @MainActor @Observable final class Preferences {
     static let disclaimerVersion = "2026-10-v1"
     private let defaults: UserDefaults
+    var reminderEnabled: Bool { didSet { defaults.set(reminderEnabled, forKey: "reminderEnabled") } }
+    var reminderHour: Int { didSet { defaults.set(reminderHour, forKey: "reminderHour") } }
+    var reminderMinute: Int { didSet { defaults.set(reminderMinute, forKey: "reminderMinute") } }
+    var reminderSettings: ReminderSettings { .init(enabled: reminderEnabled, hour: reminderHour, minute: reminderMinute) }
     var acknowledged: Bool
     var largerText: Bool { didSet { defaults.set(largerText, forKey: "largerText") } }
     var speechRate: Double { didSet { defaults.set(speechRate, forKey: "speechRate") } }
@@ -76,6 +80,9 @@ import Observation
         #else
         defaults = .standard
         #endif
+        reminderEnabled = defaults.bool(forKey: "reminderEnabled")
+        reminderHour = min(23, max(0, defaults.object(forKey: "reminderHour") as? Int ?? 9))
+        reminderMinute = min(59, max(0, defaults.integer(forKey: "reminderMinute")))
         acknowledged = defaults.string(forKey: "acknowledgedVersion") == Self.disclaimerVersion
         largerText = defaults.bool(forKey: "largerText")
         speechRate = defaults.object(forKey: "speechRate") as? Double ?? 0.45

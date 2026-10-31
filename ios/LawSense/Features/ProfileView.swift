@@ -67,6 +67,7 @@ struct SettingsView: View {
                 Toggle("更大的正文", isOn: $preferences.largerText)
                 Text("与系统动态字号共同生效。").font(.footnote).foregroundStyle(.secondary)
             }
+            Section("每日一题") { NavigationLink("每日提醒") { ReminderSettingsView() } }
             Section("语音朗读") {
                 Slider(value: $preferences.speechRate, in: 0.3...0.6, step: 0.05) { Text("朗读语速") }
                 HStack { Text("慢一些"); Spacer(); Text("快一些") }.font(.caption).foregroundStyle(.secondary)

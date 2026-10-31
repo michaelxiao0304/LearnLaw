@@ -36,6 +36,7 @@ struct CardDetailView: View {
                 Label("用一道题巩固理解", systemImage: "checkmark.circle")
             }.buttonStyle(PrimaryAction()).accessibilityIdentifier("card-quiz")
             Text("来源：识法开发阅读样例 · 非法律内容").font(.footnote).foregroundStyle(.secondary)
+            NavigationLink("内容纠错") { FeedbackView(contentID: "\(card.id):\(card.revision)", packageID: catalog.packageId) }
             DisclaimerFooter()
         }
         .navigationTitle("知识卡").navigationBarTitleDisplayMode(.inline)
@@ -90,6 +91,8 @@ struct ArticleDetailView: View {
             ForEach(catalog.cards.filter { $0.articleRefs.contains(article.reference) }) { card in
                 NavigationLink(value: Route.card(card.id)) { KnowledgeCardRow(card: card) }.buttonStyle(.plain)
             }
+            NavigationLink("生成原文分享图") { ShareArticleView(article: article) }
+            NavigationLink("内容纠错") { FeedbackView(contentID: article.id, packageID: catalog.packageId) }
             DisclaimerFooter()
         }.navigationTitle("原文阅读").navigationBarTitleDisplayMode(.inline).onDisappear { speech.stop() }
     }

@@ -5,9 +5,11 @@ import AVFoundation
     @State private var app = AppModel()
     @State private var preferences = Preferences()
     @State private var speech = SpeechService()
+    @State private var reminder = ReminderService()
+    @State private var notificationRouter = NotificationRouter()
     var body: some Scene {
         WindowGroup {
-            LaunchView().environment(app).environment(preferences).environment(speech)
+            LaunchView().environment(app).environment(preferences).environment(speech).environment(reminder).environment(notificationRouter)
                 .tint(.bamboo)
         }
     }
@@ -17,6 +19,7 @@ struct LaunchView: View {
     @Environment(AppModel.self) private var app
     @Environment(Preferences.self) private var preferences
     @Environment(SpeechService.self) private var speech
+    @Environment(ReminderService.self) private var reminder
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         @Bindable var app = app
@@ -36,10 +39,13 @@ struct LaunchView: View {
             }
         }
         .task(id: preferences.acknowledged) {
-            if preferences.acknowledged && app.catalog == nil { await app.load() }
+            if preferences.acknowledged {
+                if app.catalog == nil { await app.load() }
+                await reminder.synchronize(preferences.reminderSettings)
+            }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { app.refreshDay() } else { speech.stop() }
+            if phase == .active { app.refreshDay(); Task { await reminder.synchronize(preferences.reminderSettings) } } else { speech.stop() }
         }
         .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { _ in speech.stop() }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in app.refreshDay() }
@@ -60,6 +66,8 @@ enum Route: Hashable {
 }
 
 struct RootTabs: View {
+    @Environment(NotificationRouter.self) private var notificationRouter
+    @State private var dailyPresented = false
     @Environment(AppModel.self) private var app
     let catalog: ContentCatalog
     var body: some View {
@@ -79,6 +87,18 @@ struct RootTabs: View {
                 FeatureNavigation { ProfileView(catalog: catalog) }.tabItem { Label("我的", systemImage: "person.crop.circle") }
             }
         }.background(Color.paper)
+        .onChange(of: notificationRouter.openDaily, initial: true) { _, open in
+            if open { app.refreshDay(); dailyPresented = true; notificationRouter.openDaily = false }
+        }
+        .sheet(isPresented: $dailyPresented) {
+            NavigationStack {
+                Group {
+                    if let question = app.todayQuestion { QuizView(question: question, mode: "daily", catalog: catalog) }
+                    else { ContentUnavailableView("今日内容已更新", systemImage: "book.closed", description: Text("请返回目录查看当前内容。")) }
+                }.navigationDestination(for: Route.self) { DestinationView(route: $0) }
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("关闭") { dailyPresented = false } } }
+            }
+        }
     }
 }
 

@@ -97,6 +97,28 @@ final class LawSenseUITests: XCTestCase {
         XCTAssertFalse(app.buttons["确认清除学习记录"].exists)
     }
 
+    @MainActor func testArticleSharingAndUnconfiguredFeedback() {
+        let app = launchAndAccept()
+        app.tabBars.buttons["查法条"].tap()
+        let search = app.searchFields.firstMatch
+        search.tap(); search.typeText("1")
+        let article = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "看见一条结论，先问出处")).firstMatch
+        XCTAssertTrue(article.waitForExistence(timeout: 5)); article.tap()
+        let share = app.buttons["生成原文分享图"]
+        for _ in 0..<8 where !share.isHittable { app.swipeUp() }
+        share.tap()
+        XCTAssertTrue(app.buttons["分享全部图片"].waitForExistence(timeout: 15))
+        capture(app, name: "share-ready")
+        app.navigationBars.buttons.firstMatch.tap()
+        let feedback = app.buttons["内容纠错"]
+        for _ in 0..<5 where !feedback.isHittable { app.swipeUp() }
+        feedback.tap()
+        XCTAssertTrue(app.textViews["纠错说明"].waitForExistence(timeout: 5))
+        for _ in 0..<5 where !app.buttons["复制纠错草稿"].isHittable { app.swipeUp() }
+        XCTAssertTrue(app.buttons["复制纠错草稿"].exists)
+        XCTAssertFalse(app.buttons["打开邮件草稿"].exists)
+    }
+
     @MainActor private func capture(_ app: XCUIApplication, name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
