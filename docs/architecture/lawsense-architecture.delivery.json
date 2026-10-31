@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "receiptId": "e039f90d-16e8-4aac-8ac3-797cd890b826",
+  "receiptId": "882fd922-8668-4afe-be74-2846fafc41af",
   "status": "current",
   "command": "deliver",
   "type": "architecture",
-  "input": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.json",
-  "output": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.html",
+  "input": "/Users/michaelxiao/Documents/Code/LearnLaw/.worktrees/ios-app/docs/architecture/lawsense-architecture.json",
+  "output": "/Users/michaelxiao/Documents/Code/LearnLaw/.worktrees/ios-app/docs/architecture/lawsense-architecture.html",
   "specification": {
-    "sha256": "991b54ea40d48ced65a5117925321d150e645db0973512418f56343162f7393f",
-    "bytes": 3120
+    "sha256": "a47eca496be75d6ce9fcb778e9c1827b627b0fabd1df9856439cfd732c5d6eb3",
+    "bytes": 4534
   },
   "artifact": {
-    "sha256": "8a101f6b940dc03bcb9e6afee0125ad6ecb4c11d8e308f9fdc1c683479ff9f51",
-    "bytes": 843229
+    "sha256": "83713bd8b4808f1f74515df599bddbbe9b23b07c5168a5cde9b60be1b02287df",
+    "bytes": 843269
   }
 }
