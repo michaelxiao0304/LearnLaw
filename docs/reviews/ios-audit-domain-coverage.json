@@ -1,0 +1,39 @@
+{
+  "tool": "swift test --enable-code-coverage / LLVM coverage",
+  "scope": "Domain only, excludes UI/storage and tests",
+  "reviewedCommit": "aeb1568",
+  "files": [
+    {
+      "path": "Content.swift",
+      "lines": {
+        "count": 14,
+        "covered": 7,
+        "percent": 50
+      }
+    },
+    {
+      "path": "ContentSearch.swift",
+      "lines": {
+        "count": 57,
+        "covered": 56,
+        "percent": 98.24561403508771
+      }
+    },
+    {
+      "path": "ContentValidation.swift",
+      "lines": {
+        "count": 54,
+        "covered": 51,
+        "percent": 94.44444444444444
+      }
+    },
+    {
+      "path": "LearningRules.swift",
+      "lines": {
+        "count": 40,
+        "covered": 37,
+        "percent": 92.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "reviewedCommit": "aeb1568",
+  "sourceUnchanged": true,
+  "results": {
+    "domain": {
+      "tests": 10,
+      "passed": 10
+    },
+    "existingPersistence": {
+      "tests": 4,
+      "passed": 4
+    },
+    "newClockRollbackRegressions": {
+      "tests": 2,
+      "passed": 0,
+      "failed": 2
+    },
+    "existingUI": {
+      "tests": 3,
+      "passedOnRetry": 3,
+      "initialAttempt": "runner crashed before tests"
+    }
+  },
+  "environment": {
+    "xcode": "27.2 (27B52)",
+    "swift": "6.4.2",
+    "runtime": "iOS 27.2",
+    "deploymentTarget": "17.0",
+    "physicalDevice": false
+  },
+  "releaseReady": false
+}

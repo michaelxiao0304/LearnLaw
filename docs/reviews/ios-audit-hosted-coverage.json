@@ -1,0 +1,35 @@
+{
+  "reviewedCommit": "aeb1568",
+  "scope": "6 hosted persistence tests (4 pass, 2 fail). UI runner crashed before tests. Not full-app test coverage.",
+  "app": {
+    "coveredLines": 330,
+    "executableLines": 1831,
+    "lineCoverage": 0.18022938285090115
+  },
+  "selectedFiles": [
+    {
+      "name": "SpeechService.swift",
+      "coveredLines": 4,
+      "executableLines": 74,
+      "lineCoverage": 0.05405405405405406
+    },
+    {
+      "name": "AppModel.swift",
+      "coveredLines": 13,
+      "executableLines": 39,
+      "lineCoverage": 0.3333333333333333
+    },
+    {
+      "name": "UserStore.swift",
+      "coveredLines": 135,
+      "executableLines": 137,
+      "lineCoverage": 0.9854014598540146
+    },
+    {
+      "name": "ContentLoader.swift",
+      "coveredLines": 0,
+      "executableLines": 15,
+      "lineCoverage": 0
+    }
+  ]
+}
