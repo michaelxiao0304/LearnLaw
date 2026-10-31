@@ -2,10 +2,27 @@ import Foundation
 import Observation
 
 @MainActor @Observable final class AppModel {
+    private let makeUserStore: @MainActor () throws -> UserStore
+
+    init(makeUserStore: @escaping @MainActor () throws -> UserStore = AppModel.openUserStore) {
+        self.makeUserStore = makeUserStore
+    }
+
+    private static func openUserStore() throws -> UserStore {
+        #if DEVELOPMENT_CONTENT
+        let inMemory = ProcessInfo.processInfo.arguments.contains("--ui-testing")
+        #else
+        let inMemory = false
+        #endif
+        return try UserStore(container: UserStore.makeContainer(inMemory: inMemory))
+    }
+
+    private(set) var searchIndex: ContentSearch?
     private(set) var catalog: ContentCatalog?
     private(set) var user: UserStore?
     private(set) var loading = false
     var loadError: String?
+    var userStorageError: String?
     var actionError: String?
     var todayQuestion: Question?
     var todayKey = ""
@@ -16,17 +33,21 @@ import Observation
         defer { loading = false }
         do {
             let contents = try await ContentLoader.load()
+            searchIndex = await Self.index(contents)
             catalog = contents
-            #if DEVELOPMENT_CONTENT
-            let inMemory = ProcessInfo.processInfo.arguments.contains("--ui-testing")
-            #else
-            let inMemory = false
-            #endif
-            user = try UserStore(container: UserStore.makeContainer(inMemory: inMemory))
+            do {
+                user = try makeUserStore()
+                userStorageError = nil
+            } catch {
+                userStorageError = error.localizedDescription
+                user = UserStore(readOnly: true)
+            }
             refreshDay()
         } catch is CancellationError { }
         catch { loadError = error.localizedDescription }
     }
+
+    @concurrent private static func index(_ catalog: ContentCatalog) async -> ContentSearch { ContentSearch(catalog: catalog) }
 
     func perform(_ action: () throws -> Void) {
         do { try action() } catch { actionError = "操作尚未完成：\(error.localizedDescription)" }

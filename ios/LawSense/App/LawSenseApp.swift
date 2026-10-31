@@ -60,14 +60,21 @@ enum Route: Hashable {
 }
 
 struct RootTabs: View {
+    @Environment(AppModel.self) private var app
     let catalog: ContentCatalog
     var body: some View {
         VStack(spacing: 0) {
             DevelopmentBanner()
+            if app.userStorageError != nil {
+                VStack {
+                    Text("只读模式：用户记录暂时无法打开，原数据已保留。")
+                    Button("重试打开记录") { Task { await app.load() } }
+                }.font(.footnote).padding(8)
+            }
             TabView {
                 FeatureNavigation { HomeView(catalog: catalog) }.tabItem { Label("今日", systemImage: "leaf") }
                 FeatureNavigation { LearnView(catalog: catalog) }.tabItem { Label("学法堂", systemImage: "book") }
-                LawLibraryView(catalog: catalog).tabItem { Label("查法条", systemImage: "text.magnifyingglass") }
+                if let index = app.searchIndex { LawLibraryView(catalog: catalog, index: index).tabItem { Label("查法条", systemImage: "text.magnifyingglass") } }
                 FeatureNavigation { PracticeView(catalog: catalog) }.tabItem { Label("练习场", systemImage: "checkmark.circle") }
                 FeatureNavigation { ProfileView(catalog: catalog) }.tabItem { Label("我的", systemImage: "person.crop.circle") }
             }

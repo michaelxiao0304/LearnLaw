@@ -4,7 +4,7 @@ struct LearnView: View {
     let catalog: ContentCatalog
     @State private var selectedLaw: String?
     var body: some View {
-        Page {
+        Page(lazy: true) {
             SectionHeading(title: "生活有疑问，学法有方向", caption: "选择一个主题，从小处开始")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {

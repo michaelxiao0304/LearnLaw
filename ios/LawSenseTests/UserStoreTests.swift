@@ -33,23 +33,26 @@ import SwiftData
     @Test func bookmarkAndAttemptsSurviveReopeningStore() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: url) }
+        // SwiftData may retain SQLite handles beyond ARC scopes. The test runner
+        // cleans its isolated temporary container after the host process exits.
         let database = url.appendingPathComponent("test.store")
         let catalog = try catalog()
         let question = try #require(catalog.questions.first)
         let card = try #require(catalog.card(question.cardId))
-        do {
+        try autoreleasepool {
             let store = try UserStore(container: UserStore.makeContainer(url: database))
             try store.toggleBookmark(kind: "card", target: card.id, title: card.title)
             try store.submit(id: "durable", question: question, selected: "b", mode: "practice")
             try store.complete(card: card, question: question, attemptID: "durable")
         }
+        try autoreleasepool {
         let reopened = try UserStore(container: UserStore.makeContainer(url: database))
         #expect(reopened.isBookmarked(kind: "card", target: card.id))
         #expect(reopened.attempts.count == 1)
         #expect(reopened.completed.contains("\(card.id):\(card.revision)"))
         try reopened.toggleBookmark(kind: "card", target: card.id, title: card.title)
         #expect(reopened.bookmarks.isEmpty)
+        }
     }
     @Test func todayAssignmentSurvivesRepeatedCalls() throws {
         let catalog = try catalog()

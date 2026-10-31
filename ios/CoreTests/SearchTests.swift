@@ -3,6 +3,13 @@ import Testing
 struct SearchTests {
     @Test(arguments: [("第一条", "1"), ("第十三条之一", "13-1"), ("264", "264"), ("一千零一", "1001")])
     func parsesArticleNumbers(input: String, expected: String) { #expect(ContentSearch.articleNumber(input) == expected) }
+    @Test func combinedLawAndNumberAndMalformedNumbers() {
+        let search = ContentSearch(catalog: ContentValidationTests.fixture())
+        #expect(search.articles(query: "示例第一条").count == 1)
+        #expect(search.articles(query: "示例第二条").isEmpty)
+        #expect(ContentSearch.articleNumber("第条1第") == nil)
+        #expect(ContentSearch.articleNumber("一百百") == nil)
+    }
     @Test func exactVersionAndMissingArticleDoNotFallBack() {
         let search = ContentSearch(catalog: ContentValidationTests.fixture())
         #expect(search.articles(query: "第一条").count == 1)

@@ -3,8 +3,7 @@ import SwiftData
 import Testing
 @testable import LawSenseDev
 
-/// Audit-only regressions: these intentionally fail on the reviewed aeb1568 app.
-/// The implementation is unchanged; remove this comment when fixing the behavior.
+/// Reproduced on aeb1568; commit order, rather than wall-clock order, is authoritative.
 @MainActor struct AuditRegressionTests {
     @Test func successfulReviewAfterClockRollbackClearsPending() throws {
         let catalog = try UserStoreTests().catalog()

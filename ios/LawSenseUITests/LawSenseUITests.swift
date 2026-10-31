@@ -13,8 +13,12 @@ final class LawSenseUITests: XCTestCase {
         let toggle = app.switches["acknowledge-toggle"]
         if !toggle.isHittable { app.swipeUp() }
         // SwiftUI exposes both the labelled row and its native switch.
+        // Tap the native switch thumb after scrolling; the labelled outer row's
+        // center can lie outside the actual switch hit area on wrapped labels.
         let control = toggle.switches.firstMatch
-        if control.exists { control.tap() } else { toggle.tap() }
+        let target = control.exists ? control : toggle
+        XCTAssertTrue(target.waitForExistence(timeout: 5))
+        target.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: start)
         XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 5), .completed, "Acknowledgement must enable the start button")
         start.tap()
@@ -74,6 +78,23 @@ final class LawSenseUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["article-original"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["开发样例 v1 · 非施行版本"].exists)
         capture(app, name: "article")
+    }
+
+    @MainActor func testPrivacyPolicyAndSafeClearConfirmation() {
+        let app = launchAndAccept()
+        app.tabBars.buttons["我的"].tap()
+        app.buttons["阅读与设置"].tap()
+        let policy = app.buttons["隐私政策与本地数据说明"]
+        for _ in 0..<4 where !policy.isHittable { app.swipeUp() }
+        policy.tap()
+        XCTAssertTrue(app.staticTexts["本地保存什么"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.firstMatch.tap()
+        let clear = app.buttons["清除学习记录"]
+        for _ in 0..<4 where !clear.isHittable { app.swipeUp() }
+        clear.tap()
+        XCTAssertTrue(app.buttons["确认清除学习记录"].waitForExistence(timeout: 5))
+        app.buttons["取消"].tap()
+        XCTAssertFalse(app.buttons["确认清除学习记录"].exists)
     }
 
     @MainActor private func capture(_ app: XCUIApplication, name: String) {

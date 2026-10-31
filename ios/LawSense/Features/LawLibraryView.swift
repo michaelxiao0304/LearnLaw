@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LawLibraryView: View {
     let catalog: ContentCatalog
+    let index: ContentSearch
     @State private var query = ""
     @State private var lawId = ""
     @State private var selection: ArticleReference?
@@ -15,6 +16,11 @@ struct LawLibraryView: View {
                     Picker("篇目", selection: $lawId) {
                         Text("全部篇目").tag("")
                         ForEach(catalog.laws) { Text($0.title).tag($0.id) }
+                    }
+                }
+                if !query.isEmpty {
+                    ForEach(index.suggestions(for: query), id: \.self) { suggestion in
+                        Button(suggestion) { query = suggestion }
                     }
                 }
                 Section(query.isEmpty ? "按篇目阅读" : "检索结果") {
@@ -52,14 +58,14 @@ struct LawLibraryView: View {
         searching = true
         do {
             try await Task.sleep(for: .milliseconds(150))
-            let found = await Self.find(catalog: catalog, query: query, lawId: lawId)
+            let found = await Self.find(index: index, query: query, lawId: lawId)
             try Task.checkCancellation()
             results = found; searching = false
         } catch is CancellationError { }
         catch { searching = false }
     }
-    @concurrent private static func find(catalog: ContentCatalog, query: String, lawId: String) async -> [Article] {
+    @concurrent private static func find(index: ContentSearch, query: String, lawId: String) async -> [Article] {
         guard query.count <= 100 else { return [] }
-        return ContentSearch(catalog: catalog).articles(query: query, lawId: lawId.isEmpty ? nil : lawId)
+        return index.articles(query: query, lawId: lawId.isEmpty ? nil : lawId)
     }
 }

@@ -5,7 +5,7 @@ struct PracticeView: View {
     @Environment(UserStore.self) private var user
     let catalog: ContentCatalog
     var body: some View {
-        Page {
+        Page(lazy: true) {
             SectionHeading(title: "把读过的，变成懂得的", caption: "认真想一想，答错也有收获")
             if let question = app.todayQuestion {
                 PaperCard {
@@ -55,7 +55,7 @@ struct QuizView: View {
         _attemptID = State(initialValue: mode == "daily" ? "daily:\(LearningRules.dayKey(.now, timeZone: .current)):\(question.identity)" : UUID().uuidString)
     }
     var body: some View {
-        Page {
+        Page(lazy: true) {
             Text(mode == "daily" ? "今日一题" : mode == "review" ? "错题复习" : "巩固理解")
                 .font(.subheadline.bold()).foregroundStyle(Color.bamboo)
             Text(question.prompt).font(.title.bold()).fixedSize(horizontal: false, vertical: true)
@@ -114,7 +114,7 @@ struct WrongQuestionsView: View {
     let catalog: ContentCatalog
     @State private var onlyPending = true
     var body: some View {
-        Page {
+        Page(lazy: true) {
             Toggle("只看待复习", isOn: $onlyPending)
             let questions = user.wrongQuestions(in: catalog, onlyPending: onlyPending)
             if questions.isEmpty {

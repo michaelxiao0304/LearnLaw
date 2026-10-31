@@ -24,6 +24,7 @@ def file_ref(path, kind):
     return obj('file:'+path, 'PBXFileReference', lastKnownFileType=kind, path=path, sourceTree='<group>')
 
 source_refs = [file_ref(str(p.relative_to(ROOT)), 'sourcecode.swift') for p in sorted((ROOT/'LawSense').rglob('*.swift'))]
+privacy = file_ref('LawSense/PrivacyInfo.xcprivacy','text.plist.xml')
 assets = file_ref('LawSense/Assets.xcassets','folder.assetcatalog')
 fixture = [file_ref('DevelopmentContent/development-catalog.json','text.json'),file_ref('DevelopmentContent/development-catalog.sha256','text')]
 unit_sources = [file_ref(str(p.relative_to(ROOT)),'sourcecode.swift') for p in sorted((ROOT/'LawSenseTests').glob('*.swift'))]
@@ -63,12 +64,12 @@ def target(name, sources, resources, product_type, extra, app_target=None):
     return result
 
 app_settings=dict(ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon',INFOPLIST_KEY_CFBundleDisplayName='识法',INFOPLIST_KEY_UILaunchScreen_Generation='YES',INFOPLIST_KEY_UIApplicationSceneManifest_Generation='YES',INFOPLIST_KEY_UISupportedInterfaceOrientations='UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight',INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad='UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight')
-production=target('LawSense',source_refs,[assets],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSense'))
-dev=target('LawSenseDevelopment',source_refs,[assets,*fixture],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSenseDev',INFOPLIST_KEY_CFBundleDisplayName='识法·开发'))
+production=target('LawSense',source_refs,[assets,privacy],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSense'))
+dev=target('LawSenseDevelopment',source_refs,[assets,privacy,*fixture],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSenseDev',INFOPLIST_KEY_CFBundleDisplayName='识法·开发'))
 unit=target('LawSenseTests',unit_sources,[],'bundle.unit-test',dict(TEST_HOST='$(BUILT_PRODUCTS_DIR)/LawSenseDevelopment.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LawSenseDevelopment',BUNDLE_LOADER='$(TEST_HOST)'),dev)
 ui=target('LawSenseUITests',ui_sources,[],'bundle.ui-testing',dict(TEST_TARGET_NAME='LawSenseDevelopment'),dev)
 products_group=obj('products','PBXGroup',name='Products',children=products,sourceTree='<group>')
-main_group=obj('main-group','PBXGroup',children=[*source_refs,assets,*fixture,*unit_sources,*ui_sources,products_group],sourceTree='<group>')
+main_group=obj('main-group','PBXGroup',children=[*source_refs,assets,privacy,*fixture,*unit_sources,*ui_sources,products_group],sourceTree='<group>')
 obj('project','PBXProject',attributes={'LastUpgradeCheck':'2700','BuildIndependentTargetsInParallel':'YES'},buildConfigurationList=configurations('project',project_settings),compatibilityVersion='Xcode 14.0',developmentRegion='zh-Hans',knownRegions=['zh-Hans','en','Base'],mainGroup=main_group,productRefGroup=products_group,projectDirPath='',projectRoot='',targets=targets)
 project_dir=ROOT/'LawSense.xcodeproj'
 project_dir.mkdir(exist_ok=True)

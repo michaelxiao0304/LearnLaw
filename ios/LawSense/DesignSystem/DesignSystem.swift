@@ -8,10 +8,14 @@ extension Color {
 }
 
 struct Page<Content: View>: View {
+    var lazy = false
     @ViewBuilder let content: Content
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) { content }
+            Group {
+                if lazy { LazyVStack(alignment: .leading, spacing: 24) { content } }
+                else { VStack(alignment: .leading, spacing: 24) { content } }
+            }
                 .frame(maxWidth: 760, alignment: .leading)
                 .padding(20)
                 .frame(maxWidth: .infinity)
