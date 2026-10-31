@@ -1,3 +1,5 @@
+> 开发入口：[开发 Spec](docs/development-spec.md) · [目标架构图](docs/architecture/lawsense-architecture.html) · [开发约束](Agents.md#9-开发执行约束2026-10-31-补充)。以下保留 PRD v1.2 镜像；产品更新以 `Agents.md` 为准。
+
 # 普法工具 App 产品需求文档（PRD）
 
 | 项目 | 内容 |

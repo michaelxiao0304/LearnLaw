@@ -1,0 +1,2 @@
+# Preserve byte-for-byte Archify output and its verification hashes.
+docs/architecture/lawsense-architecture.html -whitespace linguist-generated=true

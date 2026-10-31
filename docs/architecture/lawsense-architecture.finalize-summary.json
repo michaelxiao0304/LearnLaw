@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.json",
+    "sha256": "991b54ea40d48ced65a5117925321d150e645db0973512418f56343162f7393f",
+    "bytes": 3120
+  },
+  "artifact": {
+    "path": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.html",
+    "sha256": "8a101f6b940dc03bcb9e6afee0125ad6ecb4c11d8e308f9fdc1c683479ff9f51",
+    "bytes": 843229
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "fail"
+  },
+  "failedStage": "browser-check",
+  "diagnostics": [
+    {
+      "code": "viewer/browser-check-runtime",
+      "severity": "error",
+      "message": "browser-check could not complete its Chrome inspection.",
+      "subject": {
+        "artifact": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.html"
+      },
+      "evidence": {
+        "reason": "Chrome DevTools read pipe failed: stream ended\nChrome process: still running.\nChrome transport: Node v20.20.2, libuv 1.46.0, darwin; pid=58172, exitCode=null, signalCode=null.\nChrome read pipe: readable=false, ended=true, destroyed=false, receivedBytes=0, messages=0, bufferedBytes=0.\nChrome write pipe: writable=true, ended=false, destroyed=false, completedWrites=1, writtenBytes=50, bufferedBytes=0."
+      },
+      "supportedFixes": [
+        "resolve the reported Chrome inspection error, then rerun browser-check"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.finalize.json",
+    "summaryReceipt": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.finalize-summary.json",
+    "browserCheckReceipt": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 900,
+  "browserCheck": {
+    "requested": true,
+    "ran": false
+  }
+}

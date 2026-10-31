@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "识法 · 目标架构与独立应用边界",
+    "locale": "zh-CN",
+    "output": "docs/architecture/lawsense-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {"id":"official","type":"external","label":"官方内容来源","sublabel":"法条原文与权威案例","pos":[40,40],"size":[200,72]},
+    {"id":"review","type":"security","label":"审核与发布门禁","sublabel":"人工签审 · 引用校验","pos":[340,40],"size":[200,72]},
+    {"id":"assets","type":"database","label":"共享资源 resource","sublabel":"版本化 JSON · 图像源文件","pos":[640,40],"size":[200,72]},
+    {"id":"android","type":"frontend","label":"Android 应用 · V2","sublabel":"独立工程 · 独立本地存储","pos":[940,40],"size":[200,72]},
+    {"id":"reader","type":"external","label":"普通读者","sublabel":"离线学法 · 查条 · 答题","pos":[40,300],"size":[200,72]},
+    {"id":"ios","type":"frontend","label":"iOS 页面与状态","sublabel":"SwiftUI · Observation","pos":[340,300],"size":[200,72]},
+    {"id":"services","type":"backend","label":"应用内服务与规则","sublabel":"内容查询 · 学习 · 系统能力","pos":[640,300],"size":[200,72]},
+    {"id":"userdata","type":"database","label":"用户学习记录","sublabel":"SwiftData · 单一写入者","pos":[940,300],"size":[200,72]}
+  ],
+  "boundaries": [
+    {"kind":"region","label":"iOS 17+ · 设备内运行","wraps":["ios","services","userdata"],"pad":24}
+  ],
+  "connections": [
+    {"id":"collect","from":"official","to":"review","label":"采集校对"},
+    {"id":"approve","from":"review","to":"assets","label":"通过后发布","variant":"security"},
+    {"id":"android-package","from":"assets","to":"android","label":"构建时打包"},
+    {"id":"ios-package","from":"assets","to":"services","label":"只读打包副本","fromSide":"bottom","toSide":"top"},
+    {"id":"read","from":"reader","to":"ios","label":"操作","variant":"emphasis"},
+    {"id":"invoke","from":"ios","to":"services","label":"本地调用","variant":"emphasis"},
+    {"id":"persist","from":"services","to":"userdata","label":"读写记录"}
+  ],
+  "cards": [
+    {"dot":"emerald","title":"设计目标，不代表已实现","items":["依据 Agents.md PRD v1.2 与开发 spec；当前尚无 App 代码。","V1.0 交付 iOS；Android 保留独立目录，V2 再确定技术栈。"]},
+    {"dot":"amber","title":"内容与用户状态分开","items":["法条、解读、案例和测验随应用发版；没有运行时内容服务器。","内容库只读，搜索索引可重建；收藏、错题和进度保存在用户库。","审核与工具运行在开发侧；自动检查不能代替法律专业审核。"]},
+    {"dot":"cyan","title":"服务运行在设备内","items":["业务规则为可测纯函数；内容查询与搜索在后台执行。","系统 TTS、本地通知、分享和邮件草稿由独立适配器处理。","两端不共享业务代码，不互相依赖；只复用资源、数据契约和验收样例。"]}
+  ]
+}

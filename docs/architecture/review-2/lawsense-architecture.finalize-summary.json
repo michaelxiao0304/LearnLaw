@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.json",
+    "sha256": "991b54ea40d48ced65a5117925321d150e645db0973512418f56343162f7393f",
+    "bytes": 3120
+  },
+  "artifact": {
+    "path": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.html",
+    "sha256": "8a101f6b940dc03bcb9e6afee0125ad6ecb4c11d8e308f9fdc1c683479ff9f51",
+    "bytes": 843229
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/review-2/lawsense-architecture.finalize.json",
+    "summaryReceipt": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/review-2/lawsense-architecture.finalize-summary.json",
+    "browserCheckReceipt": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/review-2/lawsense-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-31T08:30:25.407Z",
+    "source": "network",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 4092,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

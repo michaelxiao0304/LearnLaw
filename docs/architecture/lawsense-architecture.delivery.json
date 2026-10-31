@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "e039f90d-16e8-4aac-8ac3-797cd890b826",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.json",
+  "output": "/private/tmp/lawsense-development-spec-20261031/docs/architecture/lawsense-architecture.html",
+  "specification": {
+    "sha256": "991b54ea40d48ced65a5117925321d150e645db0973512418f56343162f7393f",
+    "bytes": 3120
+  },
+  "artifact": {
+    "sha256": "8a101f6b940dc03bcb9e6afee0125ad6ecb4c11d8e308f9fdc1c683479ff9f51",
+    "bytes": 843229
+  }
+}
