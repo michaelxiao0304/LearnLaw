@@ -51,9 +51,10 @@ struct ReadingText: View {
     let text: String
     var emphasized = false
     var body: some View {
+        let pointSize = baseSize * (preferences.largerText ? 1.18 : 1) * (emphasized ? 1.12 : 1)
         Text(text)
-            .font(.system(size: baseSize * (preferences.largerText ? 1.18 : 1) * (emphasized ? 1.12 : 1)))
-            .lineSpacing(baseSize * 0.45)
+            .font(.system(size: pointSize))
+            .lineSpacing(UIFont.systemFont(ofSize: pointSize).lineHeight * 0.6)
             .frame(maxWidth: .infinity, alignment: .leading)
             .textSelection(.enabled)
     }

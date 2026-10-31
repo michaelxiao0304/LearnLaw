@@ -1,0 +1,7 @@
+{
+  "requiredTopicIds": {
+    "criminal": ["criminal-property", "criminal-violence", "criminal-gambling-drugs", "criminal-online", "criminal-driving"],
+    "civil": ["civil-loans", "civil-rent", "civil-family", "civil-purchases", "civil-consumer", "civil-pets", "civil-neighbours", "civil-personality"],
+    "public_security": ["security-boundary", "security-fights", "security-order", "security-property", "security-online", "security-new-law"]
+  }
+}

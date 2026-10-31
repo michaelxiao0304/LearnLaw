@@ -104,8 +104,8 @@ enum UserSchemaV2: VersionedSchema {
 }
 
 enum UserMigrationPlan: SchemaMigrationPlan {
-    static var schemas: [any VersionedSchema.Type] { [UserSchemaV1.self, UserSchemaV2.self, UserSchemaV3.self] }
-    static var stages: [MigrationStage] { [.lightweight(fromVersion: UserSchemaV1.self, toVersion: UserSchemaV2.self), .lightweight(fromVersion: UserSchemaV2.self, toVersion: UserSchemaV3.self)] }
+    static var schemas: [any VersionedSchema.Type] { [UserSchemaV1.self, UserSchemaV2.self, UserSchemaV3.self, UserSchemaV4.self] }
+    static var stages: [MigrationStage] { [.lightweight(fromVersion: UserSchemaV1.self, toVersion: UserSchemaV2.self), .lightweight(fromVersion: UserSchemaV2.self, toVersion: UserSchemaV3.self), .lightweight(fromVersion: UserSchemaV3.self, toVersion: UserSchemaV4.self)] }
 }
 
 struct SavedBookmark: Identifiable, Sendable {
@@ -113,6 +113,7 @@ struct SavedBookmark: Identifiable, Sendable {
     let kind: String
     let target: String
     let title: String
+    let revision: Int
 }
 struct SavedAttempt: Identifiable, Sendable {
     let id: String
@@ -127,6 +128,7 @@ struct SavedAttempt: Identifiable, Sendable {
 
 @MainActor @Observable final class UserStore {
     private let context: ModelContext?
+    private let storeURL: URL?
     let isReadOnly: Bool
     private var nextSequence: Int64 = 1
     private var assignments: [String: UserSchemaV2.DailyRecord] = [:]
@@ -142,19 +144,21 @@ struct SavedAttempt: Identifiable, Sendable {
     private(set) var studyDays: Set<String> = []
 
     static func makeContainer(inMemory: Bool = false, url: URL? = nil) throws -> ModelContainer {
-        let schema = Schema(versionedSchema: UserSchemaV3.self)
+        let schema = Schema(versionedSchema: UserSchemaV4.self)
         let configuration: ModelConfiguration
         if let url {
             configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
         } else {
             configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory, cloudKitDatabase: .none)
         }
+        if !configuration.isStoredInMemoryOnly { try StoreBackup.ensureBeforeOpening(configuration.url) }
         return try ModelContainer(for: schema, migrationPlan: UserMigrationPlan.self, configurations: configuration)
     }
 
     init(container: ModelContainer) throws {
         let context = ModelContext(container)
         self.context = context
+        storeURL = container.configurations.first(where: { !$0.isStoredInMemoryOnly })?.url
         isReadOnly = false
         context.autosaveEnabled = false
         let old = try context.fetch(FetchDescriptor<UserSchemaV2.AttemptRecord>(sortBy: [SortDescriptor(\.createdAt), SortDescriptor(\.id)]))
@@ -167,6 +171,7 @@ struct SavedAttempt: Identifiable, Sendable {
     init(readOnly: Bool) {
         precondition(readOnly)
         context = nil
+        storeURL = nil
         isReadOnly = true
     }
 
@@ -186,14 +191,16 @@ struct SavedAttempt: Identifiable, Sendable {
         attempts.removeAll(); answersByID.removeAll(); completed.removeAll(); studyDays.removeAll()
         assignments.removeAll(); wrongHistory.removeAll(); pendingReview.removeAll()
         nextSequence = 1; sessions.removeAll(); levelPasses.removeAll()
+        if let storeURL { try StoreBackup.remove(for: storeURL) }
     }
 
     func clearBookmarks() throws {
         let context = try writableContext()
-        let records = try context.fetch(FetchDescriptor<UserSchemaV2.BookmarkRecord>())
+        let records = try context.fetch(FetchDescriptor<UserSchemaV4.BookmarkRecord>())
         for value in records { context.delete(value) }
         try commit()
         bookmarks.removeAll()
+        if let storeURL { try StoreBackup.remove(for: storeURL) }
     }
 
     private func writableContext() throws -> ModelContext {
@@ -203,18 +210,18 @@ struct SavedAttempt: Identifiable, Sendable {
 
     func isBookmarked(kind: String, target: String) -> Bool { bookmarks.contains { $0.kind == kind && $0.target == target } }
 
-    func toggleBookmark(kind: String, target: String, title: String) throws {
+    func toggleBookmark(kind: String, target: String, title: String, revision: Int = 0) throws {
         let context = try writableContext()
         let key = "\(kind):\(target)"
-        let query = FetchDescriptor<UserSchemaV2.BookmarkRecord>(predicate: #Predicate { $0.key == key })
+        let query = FetchDescriptor<UserSchemaV4.BookmarkRecord>(predicate: #Predicate { $0.key == key })
         if let existing = try context.fetch(query).first {
             context.delete(existing)
             try commit()
             bookmarks.removeAll { $0.id == key }
         } else {
-            context.insert(UserSchemaV2.BookmarkRecord(key: key, kind: kind, target: target, title: title))
+            context.insert(UserSchemaV4.BookmarkRecord(key: key, kind: kind, target: target, title: title, revision: revision))
             try commit()
-            bookmarks.insert(SavedBookmark(id: key, kind: kind, target: target, title: title), at: 0)
+            bookmarks.insert(SavedBookmark(id: key, kind: kind, target: target, title: title, revision: revision), at: 0)
         }
     }
 
@@ -238,7 +245,7 @@ struct SavedAttempt: Identifiable, Sendable {
 
     func complete(card: KnowledgeCard, question: Question, attemptID: String, date: Date = .now, zone: TimeZone = .current) throws {
         guard attempts.contains(where: { $0.id == attemptID && $0.questionId == question.id && $0.revision == question.revision }),
-              question.cardId == card.id else { throw ContentError.invalid("请先完成本卡测验并查看解析") }
+              question.linkedCardIDs.contains(card.id) else { throw ContentError.invalid("请先完成本卡测验并查看解析") }
         let key = "\(card.id):\(card.revision)"
         guard !completed.contains(key) else { return }
         let context = try writableContext()
@@ -361,6 +368,10 @@ struct SavedAttempt: Identifiable, Sendable {
         session.questions.indices.filter { answersByID[session.attemptID(at: $0)]?.correct == true }.count
     }
 
+    func unavailableWrongCount(in catalog: ContentCatalog) -> Int {
+        wrongHistory.subtracting(Set(catalog.questions.map(\.identity))).count
+    }
+
     func wrongQuestions(in catalog: ContentCatalog, onlyPending: Bool) -> [Question] {
         let keys = onlyPending ? pendingReview : wrongHistory
         return catalog.questions.filter { keys.contains($0.identity) }
@@ -384,8 +395,8 @@ struct SavedAttempt: Identifiable, Sendable {
 
     private func refresh() throws {
         let context = try writableContext()
-        bookmarks = try context.fetch(FetchDescriptor<UserSchemaV2.BookmarkRecord>(sortBy: [SortDescriptor(\.createdAt, order: .reverse)]))
-            .map { SavedBookmark(id: $0.key, kind: $0.kind, target: $0.target, title: $0.title) }
+        bookmarks = try context.fetch(FetchDescriptor<UserSchemaV4.BookmarkRecord>(sortBy: [SortDescriptor(\.createdAt, order: .reverse)]))
+            .map { SavedBookmark(id: $0.key, kind: $0.kind, target: $0.target, title: $0.title, revision: $0.revision) }
         let records = try context.fetch(FetchDescriptor<UserSchemaV2.AttemptRecord>(sortBy: [SortDescriptor(\.sequence)]))
         attempts = records.map(snapshot)
         answersByID = Dictionary(uniqueKeysWithValues: attempts.map { ($0.id, $0) })

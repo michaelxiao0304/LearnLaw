@@ -48,6 +48,7 @@ struct QuizView: View {
     let question: Question
     let mode: String
     let catalog: ContentCatalog
+    private let cardID: String?
     private let onSelection: ((String) -> Void)?
     private let onContinue: (() -> Void)?
     @State private var attemptID: String
@@ -56,9 +57,10 @@ struct QuizView: View {
     @State private var completed = false
     @AccessibilityFocusState private var resultFocused: Bool
 
-    init(question: Question, mode: String, catalog: ContentCatalog, attemptID: String? = nil,
+    init(question: Question, mode: String, catalog: ContentCatalog, cardID: String? = nil, attemptID: String? = nil,
          initialSelection: String? = nil, onSelection: ((String) -> Void)? = nil, onContinue: (() -> Void)? = nil) {
         self.question = question; self.mode = mode; self.catalog = catalog
+        self.cardID = cardID
         self.onSelection = onSelection; self.onContinue = onContinue
         _selected = State(initialValue: initialSelection)
         _attemptID = State(initialValue: attemptID ?? (mode == "daily" ? "daily:\(LearningRules.dayKey(.now, timeZone: .current)):\(question.identity)" : UUID().uuidString))
@@ -93,13 +95,15 @@ struct QuizView: View {
                         }
                     }
                 }.accessibilityIdentifier("answer-explanation")
-                if let card = catalog.card(question.cardId) {
+                if let card = catalog.card(cardID ?? question.cardId) {
                     Button(completed ? "已完成学习" : "完成学习") {
                         app.perform { try user.complete(card: card, question: question, attemptID: attemptID); completed = true }
                     }.buttonStyle(PrimaryAction()).disabled(completed).accessibilityIdentifier("finish-learning")
                     NavigationLink("回到知识卡复习", value: Route.card(card.id)).frame(maxWidth: .infinity).padding(12)
                 }
                 if let onContinue { Button("继续关卡", action: onContinue).buttonStyle(PrimaryAction()).accessibilityIdentifier("course-next") }
+                if let reviewed = question.reviewedAt { Text("复核至 " + String(reviewed.prefix(7))).font(.footnote) }
+                NavigationLink("内容纠错") { FeedbackView(contentID: "\(question.id):\(question.revision)", packageID: catalog.packageId) }
                 DisclaimerFooter()
             } else {
                 Button("提交答案", action: submit).buttonStyle(PrimaryAction()).disabled(selected == nil).accessibilityIdentifier("submit-answer")
@@ -107,7 +111,7 @@ struct QuizView: View {
         }.navigationTitle("小测验").navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 if let attempt = user.attempts.first(where: { $0.id == attemptID }) { saved = attempt; selected = attempt.selected }
-                if let card = catalog.card(question.cardId) { completed = user.completed.contains("\(card.id):\(card.revision)") }
+                if let card = catalog.card(cardID ?? question.cardId) { completed = user.completed.contains("\(card.id):\(card.revision)") }
             }
     }
     private func submit() {
@@ -126,6 +130,9 @@ struct WrongQuestionsView: View {
     var body: some View {
         Page(lazy: true) {
             Toggle("只看待复习", isOn: $onlyPending)
+            if user.unavailableWrongCount(in: catalog) > 0 {
+                Text("另有 \(user.unavailableWrongCount(in: catalog)) 道旧版本错题，记录仍保留；当前内容包不再包含原题，未计作新版已掌握。").font(.footnote).foregroundStyle(.secondary)
+            }
             let questions = user.wrongQuestions(in: catalog, onlyPending: onlyPending)
             if questions.isEmpty {
                 ContentUnavailableView("这里暂时没有错题", systemImage: "checkmark.seal", description: Text("答错的题会自动收录，在这里回看依据。"))

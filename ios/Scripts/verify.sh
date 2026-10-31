@@ -4,6 +4,14 @@ set -euo pipefail
 IOS_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 : "${LAWSENSE_SIMULATOR_ID:?Set LAWSENSE_SIMULATOR_ID to the test simulator UUID}"
 cd "$IOS_ROOT"
+CONTENT_PYTHON="${LAWSENSE_CONTENT_PYTHON:-$IOS_ROOT/../.venv-content/bin/python}"
+if [ ! -x "$CONTENT_PYTHON" ]; then
+  echo "Set up .venv-content using tools/content/README.md before verification." >&2
+  exit 1
+fi
+export PYTHONDONTWRITEBYTECODE=1
+"$CONTENT_PYTHON" -m unittest discover -s ../tools/content/tests -v
+"$CONTENT_PYTHON" ../tools/content/make_test_fixture.py --check
 python3 Scripts/generate_project.py
 swift test --enable-code-coverage
 plutil -lint LawSense/PrivacyInfo.xcprivacy

@@ -68,3 +68,8 @@ ios/DerivedData/
 .DS_Store
 
 ios/ProductionDerivedData/
+
+# Generated approved content and isolated content-tool dependencies
+ios/ApprovedContent/
+.venv-content/
+__pycache__/

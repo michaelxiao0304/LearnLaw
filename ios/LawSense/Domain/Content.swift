@@ -22,6 +22,7 @@ struct Article: Codable, Identifiable, Hashable, Sendable {
     let text: String
     let source: String
     let versionLabel: String
+    var reviewedAt: String? = nil
     var id: String { reference.identity }
 }
 
@@ -38,6 +39,14 @@ struct KnowledgeCard: Codable, Identifiable, Hashable, Sendable {
     let articleRefs: [ArticleReference]
     let questionId: String
     let minutes: Int
+    var source: String? = nil
+    var reviewedAt: String? = nil
+    var category: String? = nil
+    var scenarioLabel: String? = nil
+    var questionIds: [String]? = nil
+    var pointReferences: [[ArticleReference]]? = nil
+    var consequences: [ConsequenceQuote]? = nil
+    var quizIDs: [String] { questionIds ?? [questionId] }
 }
 
 struct QuizOption: Codable, Identifiable, Hashable, Sendable {
@@ -54,6 +63,9 @@ struct Question: Codable, Identifiable, Hashable, Sendable {
     let explanation: String
     let cardId: String
     let articleRefs: [ArticleReference]
+    var cardIds: [String]? = nil
+    var reviewedAt: String? = nil
+    var linkedCardIDs: [String] { cardIds ?? [cardId] }
     var identity: String { "\(id.utf8.count):\(id):\(revision)" }
 }
 
@@ -65,6 +77,9 @@ struct ContentCatalog: Codable, Sendable {
     let articles: [Article]
     let cards: [KnowledgeCard]
     let questions: [Question]
+    var coursePlan: CoursePlan? = nil
+    var searchAliases: [ContentAlias]? = nil
+    var migrations: [ContentMigration]? = nil
 
     func article(_ ref: ArticleReference) -> Article? { articles.first { $0.reference == ref } }
     func card(_ id: String) -> KnowledgeCard? { cards.first { $0.id == id } }
@@ -78,3 +93,7 @@ enum ContentError: Error, LocalizedError, Equatable {
         return nil
     }
 }
+
+struct ConsequenceQuote: Codable, Hashable, Sendable { let quote: String; let articleRef: ArticleReference }
+struct ContentAlias: Codable, Sendable { let term: String; let pinyin: String; let initials: String; let lawId: String; let isLaw: Bool }
+struct ContentMigration: Codable, Sendable { let kind: String; let oldId: String; let newIds: [String]; let change: String; let reason: String }

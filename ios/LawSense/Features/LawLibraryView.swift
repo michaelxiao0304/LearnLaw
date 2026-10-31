@@ -33,7 +33,7 @@ struct LawLibraryView: View {
                             NavigationLink(value: article.reference) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(article.number + " · " + article.title).font(.headline)
-                                    Text((catalog.laws.first { $0.id == article.reference.lawId }?.title ?? "") + " · 开发阅读样例")
+                                    Text((catalog.laws.first { $0.id == article.reference.lawId }?.title ?? "") + " · " + article.versionLabel)
                                         .font(.caption).foregroundStyle(.secondary)
                                 }.padding(.vertical, 6)
                             }

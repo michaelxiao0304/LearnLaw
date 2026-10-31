@@ -428,3 +428,8 @@ D04 可使用已校验的开发 fixture 与内容生产交错推进；最终发�
 ## 13. 实施记录
 
 - [D04 iOS 开发版](requirements/D04-ios-foundation.md)：独立 worktree 中实现首条阅读/测验/收藏闭环；正式内容、课程、通知及分享图等保持后续需求边界。
+
+
+## 2026-10-31 iOS 实现追踪
+
+当前工程进展及尚未满足的发布条件见 [发布准备复核](reviews/ios-release-readiness-2026-10-31.md)。对应实施记录：[可靠性与隐私](requirements/D10-ios-hardening.md)、[系统功能](requirements/D08-ios-system-features.md)、[学习闭环](requirements/D07-ios-learning-flow.md)、[内容发布管线](requirements/D01-content-release-pipeline.md)。正式内容生产及真实专业审核没有被工程测试替代。

@@ -34,7 +34,7 @@ import Observation
         defer { loading = false }
         do {
             let contents = try await ContentLoader.load()
-            searchIndex = await Self.index(contents)
+            searchIndex = await ContentLoader.searchIndex(for: contents)
             coursePlan = try Self.makeCoursePlan(contents)
             catalog = contents
             do {
@@ -60,11 +60,9 @@ import Observation
         try plan.validate(questionIDs: Set(catalog.questions.map(\.id)), minimumQuestions: 2)
         return plan
         #else
-        return nil
+        return catalog.coursePlan
         #endif
     }
-
-    @concurrent private static func index(_ catalog: ContentCatalog) async -> ContentSearch { ContentSearch(catalog: catalog) }
 
     func perform(_ action: () throws -> Void) {
         do { try action() } catch { actionError = "操作尚未完成：\(error.localizedDescription)" }

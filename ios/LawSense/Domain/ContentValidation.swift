@@ -1,9 +1,28 @@
 import Foundation
 
 enum DevelopmentContentValidator {
+    static func validate(_ catalog: ContentCatalog) throws { try ContentValidator.validate(catalog, expectedKind: "development") }
+}
+
+enum ApprovedContentValidator {
     static func validate(_ catalog: ContentCatalog) throws {
-        guard catalog.schemaVersion == 1, catalog.kind == "development", !catalog.packageId.isEmpty else {
-            throw ContentError.invalid("开发样例格式或类型不受支持")
+        try ContentValidator.validate(catalog, expectedKind: "approved")
+        guard Set(catalog.laws.map(\.id)) == ["criminal", "civil", "public_security"], catalog.cards.count >= 100,
+              catalog.questions.count >= 300, let plan = catalog.coursePlan else { throw ContentError.invalid("正式内容规模或课程不完整") }
+        for (law, minimum) in [("criminal", 40), ("civil", 45), ("public_security", 15)] {
+            guard catalog.cards.filter({ $0.lawId == law }).count >= minimum else { throw ContentError.invalid("正式知识卡分布不完整") }
+        }
+        guard catalog.cards.allSatisfy({ $0.source?.isEmpty == false && $0.reviewedAt?.isEmpty == false && $0.pointReferences?.count == $0.points.count }),
+              catalog.articles.allSatisfy({ $0.reviewedAt?.isEmpty == false }),
+              catalog.questions.allSatisfy({ $0.reviewedAt?.isEmpty == false }) else { throw ContentError.invalid("正式来源或复核信息缺失") }
+        try plan.validate(questionIDs: Set(catalog.questions.map(\.id)))
+    }
+}
+
+enum ContentValidator {
+    static func validate(_ catalog: ContentCatalog, expectedKind: String) throws {
+        guard catalog.schemaVersion == 1, catalog.kind == expectedKind, !catalog.packageId.isEmpty else {
+            throw ContentError.invalid("内容格式或类型不受支持")
         }
         try unique(catalog.laws.map(\.id), "篇目")
         try unique(catalog.articles.map(\.id), "条文")
@@ -20,7 +39,7 @@ enum DevelopmentContentValidator {
         for card in catalog.cards {
             try references(card.articleRefs, in: refs)
             guard laws.contains(card.lawId), card.revision > 0, !card.title.isEmpty, !card.points.isEmpty,
-                  catalog.question(card.questionId)?.cardId == card.id else {
+                  !card.quizIDs.isEmpty, card.quizIDs.contains(card.questionId), card.quizIDs.allSatisfy({ catalog.question($0)?.linkedCardIDs.contains(card.id) == true }) else {
                 throw ContentError.invalid("卡片 \(card.id) 的题目关联无效")
             }
         }
@@ -30,7 +49,7 @@ enum DevelopmentContentValidator {
             guard question.revision > 0, !question.prompt.isEmpty, !question.explanation.isEmpty,
                   question.options.count >= 2,
                   question.options.contains(where: { $0.id == question.correctOptionId }),
-                  catalog.card(question.cardId)?.questionId == question.id else {
+                  !question.linkedCardIDs.isEmpty, question.linkedCardIDs.contains(question.cardId), question.linkedCardIDs.allSatisfy({ catalog.card($0)?.quizIDs.contains(question.id) == true }) else {
                 throw ContentError.invalid("题目 \(question.id) 的答案或卡片关联无效")
             }
         }

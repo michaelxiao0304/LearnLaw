@@ -46,9 +46,28 @@ struct BookmarksView: View {
             if user.bookmarks.isEmpty { ContentUnavailableView("把想重读的，留在这里", systemImage: "bookmark", description: Text("在知识卡或原文页面点一下收藏。")) }
             ForEach(user.bookmarks) { bookmark in
                 if bookmark.kind == "card", let card = catalog.card(bookmark.target) {
-                    NavigationLink(value: Route.card(card.id)) { KnowledgeCardRow(card: card) }.buttonStyle(.plain)
+                    NavigationLink(value: Route.card(card.id)) {
+                        VStack(alignment: .leading) {
+                            KnowledgeCardRow(card: card)
+                            if bookmark.revision != card.revision {
+                                Text(bookmark.revision == 0 ? "早期收藏，请核对当前内容" : "内容已更新，请重新阅读").font(.footnote).foregroundStyle(.secondary)
+                            }
+                        }
+                    }.buttonStyle(.plain)
                 } else if let article = catalog.articles.first(where: { $0.id == bookmark.target }) { ArticleLink(article: article) }
-                else { PaperCard { Text(bookmark.title); Text("原收藏内容已更新，记录仍保留。").font(.footnote).foregroundStyle(.secondary) } }
+                else {
+                    PaperCard {
+                        Text(bookmark.title)
+                        Text("原收藏内容已更新，记录仍保留。").font(.footnote).foregroundStyle(.secondary)
+                        if let migration = catalog.migrations?.first(where: { $0.kind == bookmark.kind && $0.oldId == bookmark.target }) {
+                            Text(migration.reason).font(.footnote)
+                            ForEach(migration.newIds, id: \.self) { id in
+                                if bookmark.kind == "card", let card = catalog.card(id) { NavigationLink(card.title, value: Route.card(id)) }
+                                else if let article = catalog.articles.first(where: { $0.id == id }) { ArticleLink(article: article) }
+                            }
+                        }
+                    }
+                }
             }
         }.navigationTitle("我的收藏")
     }
@@ -80,14 +99,14 @@ struct SettingsView: View {
                 Toggle("记录学习日期与连续天数", isOn: $preferences.recordsStudyDays)
                     .onChange(of: preferences.recordsStudyDays) { _, enabled in user.recordsStudyDays = enabled }
                 Text("关闭后不再新增学习日期；收藏、答题、错题和关卡进度仍按功能需要在本机保存。已有记录可在下方清除。").font(.footnote)
-                Button("清除学习记录", role: .destructive) { clearingLearning = true }
+                Button("清除学习记录", role: .destructive) { clearingLearning = true }.accessibilityIdentifier("clear-learning")
                     .disabled(user.isReadOnly)
                 Button("清除全部收藏", role: .destructive) { clearingBookmarks = true }
                     .disabled(user.isReadOnly)
                 Text("两项分别清除，执行前会再次确认。不会改变字号、语速或免责声明确认。").font(.footnote)
             }
             Section("使用声明") { Text(LegalNotice.text); Text("声明版本：\(Preferences.disclaimerVersion)").font(.caption).foregroundStyle(.secondary) }
-            Section { HStack { Text("识法 LawSense"); Spacer(); Text("0.1.0").foregroundStyle(.secondary) } }
+            Section { HStack { Text("识法 LawSense"); Spacer(); Text(ReleaseConfiguration.appVersion).foregroundStyle(.secondary) } }
         }.scrollContentBackground(.hidden).background(Color.paper).navigationTitle("阅读与设置")
         .alert("清除答题、错题及学习进度？", isPresented: $clearingLearning) {
             Button("取消", role: .cancel) { }

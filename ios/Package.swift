@@ -7,6 +7,6 @@ let package = Package(
     products: [.library(name: "LawSenseCore", targets: ["LawSenseCore"])],
     targets: [
         .target(name: "LawSenseCore", path: "LawSense/Domain"),
-        .testTarget(name: "LawSenseCoreTests", dependencies: ["LawSenseCore"], path: "CoreTests")
+        .testTarget(name: "LawSenseCoreTests", dependencies: ["LawSenseCore"], path: "CoreTests", resources: [.copy("Fixtures")])
     ]
 )

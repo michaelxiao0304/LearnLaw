@@ -24,6 +24,11 @@ def file_ref(path, kind):
     return obj('file:'+path, 'PBXFileReference', lastKnownFileType=kind, path=path, sourceTree='<group>')
 
 source_refs = [file_ref(str(p.relative_to(ROOT)), 'sourcecode.swift') for p in sorted((ROOT/'LawSense').rglob('*.swift'))]
+approved_dir = ROOT/'ApprovedContent'
+approved_dir.mkdir(exist_ok=True)
+if not any(approved_dir.iterdir()): (approved_dir/'README.txt').write_text('No approved content configured. Release builds remain blocked.\n')
+approved = file_ref('ApprovedContent','folder')
+publisher = file_ref('Configuration/Publisher.json','text.json')
 privacy = file_ref('LawSense/PrivacyInfo.xcprivacy','text.plist.xml')
 assets = file_ref('LawSense/Assets.xcassets','folder.assetcatalog')
 fixture = [file_ref('DevelopmentContent/development-catalog.json','text.json'),file_ref('DevelopmentContent/development-catalog.sha256','text')]
@@ -51,10 +56,10 @@ def target(name, sources, resources, product_type, extra, app_target=None):
     extension='app' if product_type=='application' else 'xctest'
     product=obj(name+':product','PBXFileReference',explicitFileType='wrapper.application' if extension=='app' else 'wrapper.cfbundle',path=name+'.'+extension,sourceTree='BUILT_PRODUCTS_DIR')
     products.append(product)
-    settings=dict(project_settings,PRODUCT_NAME=name,PRODUCT_BUNDLE_IDENTIFIER='com.lawsense.app' + ('' if name=='LawSense' else '.'+name.lower()),GENERATE_INFOPLIST_FILE='YES',MARKETING_VERSION='0.1.0',CURRENT_PROJECT_VERSION='1',SUPPORTED_PLATFORMS='iphoneos iphonesimulator',SUPPORTS_MACCATALYST='NO',LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks',**extra)
+    settings=dict(project_settings,PRODUCT_NAME=name,PRODUCT_BUNDLE_IDENTIFIER='com.lawsense.app' + ('' if name=='LawSense' else '.'+name.lower()),GENERATE_INFOPLIST_FILE='YES',MARKETING_VERSION='1.0.0',CURRENT_PROJECT_VERSION='1',SUPPORTED_PLATFORMS='iphoneos iphonesimulator',SUPPORTS_MACCATALYST='NO',LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks',**extra)
     phases=[phase(name+':sources','PBXSourcesBuildPhase',sources),phase(name+':frameworks','PBXFrameworksBuildPhase',[]),phase(name+':resources','PBXResourcesBuildPhase',resources)]
     if name=='LawSense':
-        phases.insert(0,obj(name+':release-gate','PBXShellScriptBuildPhase',buildActionMask=2147483647,files=[],inputPaths=[],outputPaths=[],runOnlyForDeploymentPostprocessing=0,shellPath='/bin/sh',shellScript='if [ "$CONFIGURATION" = "Release" ]; then\n  echo "error: D01/D02 approved content integration is required before a production Release build."\n  exit 1\nfi\n',alwaysOutOfDate=1))
+        phases.insert(0,obj(name+':release-gate','PBXShellScriptBuildPhase',buildActionMask=2147483647,files=[],inputPaths=['$(SRCROOT)/ApprovedContent','$(SRCROOT)/Configuration/Publisher.json','$(SRCROOT)/../tools/content','$(SRCROOT)/../resource/content'] + (['$(SRCROOT)/../.venv-content'] if (ROOT.parent/'.venv-content').exists() else []),outputPaths=[],runOnlyForDeploymentPostprocessing=0,shellPath='/bin/sh',shellScript='if [ "$CONFIGURATION" = "Release" ]; then\n  if [ ! -f "$SRCROOT/ApprovedContent/receipt.json" ]; then\n    echo "error: Approved content is not configured; complete source verification and professional review before Release."\n    exit 1\n  fi\n  export PYTHONDONTWRITEBYTECODE=1\n  "$SRCROOT/../.venv-content/bin/python" "$SRCROOT/../tools/content/release_gate.py"\nfi\n',alwaysOutOfDate=1))
     dependencies=[]
     if app_target:
         proxy=obj(name+':proxy','PBXContainerItemProxy',containerPortal=Ref(ident('project')),proxyType=1,remoteGlobalIDString=app_target,remoteInfo='LawSenseDevelopment')
@@ -64,12 +69,12 @@ def target(name, sources, resources, product_type, extra, app_target=None):
     return result
 
 app_settings=dict(ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon',INFOPLIST_KEY_CFBundleDisplayName='识法',INFOPLIST_KEY_UILaunchScreen_Generation='YES',INFOPLIST_KEY_UIApplicationSceneManifest_Generation='YES',INFOPLIST_KEY_UISupportedInterfaceOrientations='UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight',INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad='UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight')
-production=target('LawSense',source_refs,[assets,privacy],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSense'))
-dev=target('LawSenseDevelopment',source_refs,[assets,privacy,*fixture],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSenseDev',INFOPLIST_KEY_CFBundleDisplayName='识法·开发'))
+production=target('LawSense',source_refs,[assets,privacy,publisher,approved],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSense'))
+dev=target('LawSenseDevelopment',source_refs,[assets,privacy,publisher,*fixture],'application',dict(app_settings,PRODUCT_MODULE_NAME='LawSenseDev',INFOPLIST_KEY_CFBundleDisplayName='识法·开发'))
 unit=target('LawSenseTests',unit_sources,[],'bundle.unit-test',dict(TEST_HOST='$(BUILT_PRODUCTS_DIR)/LawSenseDevelopment.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LawSenseDevelopment',BUNDLE_LOADER='$(TEST_HOST)'),dev)
 ui=target('LawSenseUITests',ui_sources,[],'bundle.ui-testing',dict(TEST_TARGET_NAME='LawSenseDevelopment'),dev)
 products_group=obj('products','PBXGroup',name='Products',children=products,sourceTree='<group>')
-main_group=obj('main-group','PBXGroup',children=[*source_refs,assets,privacy,*fixture,*unit_sources,*ui_sources,products_group],sourceTree='<group>')
+main_group=obj('main-group','PBXGroup',children=[*source_refs,assets,privacy,publisher,approved,*fixture,*unit_sources,*ui_sources,products_group],sourceTree='<group>')
 obj('project','PBXProject',attributes={'LastUpgradeCheck':'2700','BuildIndependentTargetsInParallel':'YES'},buildConfigurationList=configurations('project',project_settings),compatibilityVersion='Xcode 14.0',developmentRegion='zh-Hans',knownRegions=['zh-Hans','en','Base'],mainGroup=main_group,productRefGroup=products_group,projectDirPath='',projectRoot='',targets=targets)
 project_dir=ROOT/'LawSense.xcodeproj'
 project_dir.mkdir(exist_ok=True)

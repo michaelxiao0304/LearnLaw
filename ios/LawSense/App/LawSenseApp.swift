@@ -59,7 +59,7 @@ struct LaunchView: View {
 enum Route: Hashable {
     case card(String)
     case article(ArticleReference)
-    case quiz(String, String)
+    case quiz(String, String, cardID: String? = nil)
     case bookmarks
     case wrongQuestions
     case settings
@@ -125,8 +125,8 @@ struct DestinationView: View {
                 if let card = catalog.card(id) { CardDetailView(card: card, catalog: catalog) } else { missing }
             case .article(let ref):
                 if let article = catalog.article(ref) { ArticleDetailView(article: article, catalog: catalog) } else { missing }
-            case .quiz(let id, let mode):
-                if let question = catalog.question(id) { QuizView(question: question, mode: mode, catalog: catalog) } else { missing }
+            case .quiz(let id, let mode, let cardID):
+                if let question = catalog.question(id) { QuizView(question: question, mode: mode, catalog: catalog, cardID: cardID) } else { missing }
             case .bookmarks: BookmarksView(catalog: catalog)
             case .wrongQuestions: WrongQuestionsView(catalog: catalog)
             case .settings: SettingsView()

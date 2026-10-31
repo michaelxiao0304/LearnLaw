@@ -6,24 +6,46 @@ struct CardDetailView: View {
     @Environment(SpeechService.self) private var speech
     let card: KnowledgeCard
     let catalog: ContentCatalog
+    private var conclusionLabel: String {
+        switch card.category { case "unlawful": "违法"; case "possibly_unlawful": "可能违法"; case "attention": "注意"; default: "先记住这一点" }
+    }
     var body: some View {
         Page {
             Text(card.topic).font(.subheadline.bold()).foregroundStyle(Color.bamboo)
             Text(card.title).font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)
             PaperCard {
-                Label("先记住这一点", systemImage: "leaf.fill").font(.subheadline.bold()).foregroundStyle(Color.bamboo)
+                Label {
+                    Text(conclusionLabel).foregroundStyle(.primary)
+                } icon: { Image(systemName: card.category == "unlawful" ? "exclamationmark.octagon" : card.category == "possibly_unlawful" ? "exclamationmark.triangle" : "leaf.fill").foregroundStyle(card.category == "unlawful" ? Color.orange : card.category == "possibly_unlawful" ? Color.yellow : Color.bamboo) }
+                    .font(.subheadline.bold())
                 ReadingText(text: card.conclusion, emphasized: true)
             }
-            SectionHeading(title: "一个小场景", caption: "典型情境示例 · 开发阅读练习")
+            SectionHeading(title: "一个小场景", caption: card.scenarioLabel ?? "典型情境示例 · 开发阅读练习")
             ReadingText(text: card.story)
             SectionHeading(title: "拆开来看")
             ForEach(Array(card.points.enumerated()), id: \.offset) { index, point in
                 HStack(alignment: .top, spacing: 14) {
                     Text(String(index + 1)).font(.subheadline.bold()).foregroundStyle(Color.bamboo).padding(8).background(Color.bamboo.opacity(0.08), in: Circle())
-                    ReadingText(text: point)
+                    VStack(alignment: .leading) {
+                        ReadingText(text: point)
+                        if let refs = card.pointReferences, refs.indices.contains(index) {
+                            ForEach(refs[index], id: \.self) { ref in
+                                if let article = catalog.article(ref) { ArticleLink(article: article) }
+                            }
+                        }
+                    }
                 }
             }
             SpeechControls(text: ([card.title, card.conclusion, card.story] + card.points + [card.misconception]).joined(separator: "。"))
+            if let consequences = card.consequences {
+                ForEach(Array(consequences.enumerated()), id: \.offset) { _, consequence in
+                    PaperCard {
+                        Text("法条后果原文").font(.headline)
+                        ReadingText(text: consequence.quote)
+                        if let article = catalog.article(consequence.articleRef) { ArticleLink(article: article) }
+                    }
+                }
+            }
             SectionHeading(title: "看看依据")
             ForEach(card.articleRefs, id: \.self) { ref in
                 if let article = catalog.article(ref) { ArticleLink(article: article) }
@@ -32,10 +54,14 @@ struct CardDetailView: View {
                 Label("容易忽略的地方", systemImage: "lightbulb").font(.headline)
                 ReadingText(text: card.misconception)
             }
-            NavigationLink(value: Route.quiz(card.questionId, "card")) {
+            NavigationLink(value: Route.quiz(card.questionId, "card", cardID: card.id)) {
                 Label("用一道题巩固理解", systemImage: "checkmark.circle")
             }.buttonStyle(PrimaryAction()).accessibilityIdentifier("card-quiz")
-            Text("来源：识法开发阅读样例 · 非法律内容").font(.footnote).foregroundStyle(.secondary)
+            ForEach(card.quizIDs.dropFirst(), id: \.self) { id in
+                if let question = catalog.question(id) { NavigationLink(question.prompt, value: Route.quiz(id, "card", cardID: card.id)) }
+            }
+            if let reviewed = card.reviewedAt { Text("复核至 " + String(reviewed.prefix(7))).font(.footnote) }
+            Text("来源：" + (card.source ?? "识法开发阅读样例 · 非法律内容")).font(.footnote).foregroundStyle(.secondary)
             NavigationLink("内容纠错") { FeedbackView(contentID: "\(card.id):\(card.revision)", packageID: catalog.packageId) }
             DisclaimerFooter()
         }
@@ -43,7 +69,7 @@ struct CardDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 BookmarkButton(saved: user.isBookmarked(kind: "card", target: card.id)) {
-                    app.perform { try user.toggleBookmark(kind: "card", target: card.id, title: card.title) }
+                    app.perform { try user.toggleBookmark(kind: "card", target: card.id, title: card.title, revision: card.revision) }
                 }
             }
         }.onDisappear { speech.stop() }
@@ -87,6 +113,16 @@ struct ArticleDetailView: View {
             }
             SpeechControls(text: article.text)
             Text("来源：\(article.source)").font(.footnote).foregroundStyle(.secondary)
+            if !catalog.cards.filter({ $0.articleRefs.contains(article.reference) }).isEmpty {
+                DisclosureGroup("关联白话解读") {
+                    ForEach(catalog.cards.filter { $0.articleRefs.contains(article.reference) }) { card in
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(card.title).font(.headline)
+                            ForEach(Array(card.points.enumerated()), id: \.offset) { _, point in ReadingText(text: point) }
+                        }.padding(.vertical, 8)
+                    }
+                }
+            }
             SectionHeading(title: "一起读，更好懂")
             ForEach(catalog.cards.filter { $0.articleRefs.contains(article.reference) }) { card in
                 NavigationLink(value: Route.card(card.id)) { KnowledgeCardRow(card: card) }.buttonStyle(.plain)

@@ -1,0 +1,1047 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "articleRef": {
+      "type": "object",
+      "properties": {
+        "lawId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "lawVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "editionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "articleKey": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[1-9][0-9]*(?:-[1-9][0-9]*)?$"
+        }
+      },
+      "required": [
+        "lawId",
+        "lawVersionId",
+        "editionId",
+        "articleKey"
+      ],
+      "additionalProperties": false
+    },
+    "file": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "additionalProperties": false
+    },
+    "edition": {
+      "type": "object",
+      "properties": {
+        "lawId": {
+          "enum": [
+            "criminal",
+            "civil",
+            "public_security"
+          ]
+        },
+        "lawVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "editionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "promulgatedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "effectiveAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "statusAtReview": {
+          "const": "effective"
+        },
+        "reviewedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "articleCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "articleInventoryHash": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "lawId",
+        "lawVersionId",
+        "editionId",
+        "name",
+        "promulgatedAt",
+        "effectiveAt",
+        "statusAtReview",
+        "reviewedAt",
+        "sourceId",
+        "articleCount",
+        "articleInventoryHash"
+      ],
+      "additionalProperties": false
+    },
+    "manifest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "packageId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "minReaderVersion": {
+          "const": 1
+        },
+        "lawEditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/edition"
+          },
+          "minItems": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/file"
+          },
+          "minItems": 1
+        },
+        "releaseApprovalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "packageId",
+        "createdAt",
+        "minReaderVersion",
+        "lawEditions",
+        "files",
+        "releaseApprovalId"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "kind": {
+          "enum": [
+            "law",
+            "case",
+            "interpretation"
+          ]
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publishedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "retrievedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "snapshotPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "snapshotHash": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "publisher",
+        "title",
+        "url",
+        "retrievedAt",
+        "snapshotPath",
+        "snapshotHash"
+      ],
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      },
+      "minItems": 1
+    },
+    "article": {
+      "type": "object",
+      "properties": {
+        "articleKey": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[1-9][0-9]*(?:-[1-9][0-9]*)?$"
+        },
+        "displayNumber": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chapterPath": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "originalText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "textHash": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "reviewedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        }
+      },
+      "required": [
+        "articleKey",
+        "displayNumber",
+        "chapterPath",
+        "order",
+        "originalText",
+        "textHash",
+        "reviewedAt",
+        "sourceId"
+      ],
+      "additionalProperties": false
+    },
+    "law": {
+      "type": "object",
+      "properties": {
+        "editionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "articles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/article"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "editionId",
+        "articles"
+      ],
+      "additionalProperties": false
+    },
+    "point": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "articleRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/articleRef"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "text",
+        "articleRefs"
+      ],
+      "additionalProperties": false
+    },
+    "quote": {
+      "type": "object",
+      "properties": {
+        "quote": {
+          "type": "string",
+          "minLength": 1
+        },
+        "articleRef": {
+          "$ref": "#/$defs/articleRef"
+        }
+      },
+      "required": [
+        "quote",
+        "articleRef"
+      ],
+      "additionalProperties": false
+    },
+    "interpretation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/point"
+          },
+          "minItems": 1
+        },
+        "misconceptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/point"
+          },
+          "minItems": 1
+        },
+        "consequences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/quote"
+          },
+          "minItems": 0
+        },
+        "articleRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/articleRef"
+          },
+          "minItems": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "state": {
+          "const": "approved"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "points",
+        "misconceptions",
+        "consequences",
+        "articleRefs",
+        "reviewedAt",
+        "approvalId",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "interpretations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/interpretation"
+      },
+      "minItems": 1
+    },
+    "conclusion": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "enum": [
+            "unlawful",
+            "possibly_unlawful",
+            "attention"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "qualifications": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "category",
+        "text",
+        "qualifications"
+      ],
+      "additionalProperties": false
+    },
+    "story": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "official_case_adaptation",
+            "illustrative_scenario"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "adaptationNote": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "kind",
+        "text",
+        "adaptationNote"
+      ],
+      "additionalProperties": false
+    },
+    "card": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "primaryLawId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "topicIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "conclusion": {
+          "$ref": "#/$defs/conclusion"
+        },
+        "story": {
+          "$ref": "#/$defs/story"
+        },
+        "interpretationIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1
+        },
+        "articleRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/articleRef"
+          },
+          "minItems": 1
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1
+        },
+        "quizIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "state": {
+          "const": "approved"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "primaryLawId",
+        "topicIds",
+        "title",
+        "conclusion",
+        "story",
+        "interpretationIds",
+        "articleRefs",
+        "sourceIds",
+        "quizIds",
+        "reviewedAt",
+        "approvalId",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/card"
+      },
+      "minItems": 1
+    },
+    "option": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "question": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "enum": [
+            "single_choice",
+            "true_false"
+          ]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/option"
+          },
+          "minItems": 2
+        },
+        "correctOptionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cardIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1
+        },
+        "articleRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/articleRef"
+          },
+          "minItems": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "state": {
+          "const": "approved"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "kind",
+        "prompt",
+        "options",
+        "correctOptionIds",
+        "explanation",
+        "cardIds",
+        "articleRefs",
+        "reviewedAt",
+        "approvalId",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/question"
+      },
+      "minItems": 1
+    },
+    "topic": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "parentId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "lawId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requiredForV1": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "lawId",
+        "title",
+        "order",
+        "requiredForV1"
+      ],
+      "additionalProperties": false
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/topic"
+      },
+      "minItems": 1
+    },
+    "level": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rankId": {
+          "enum": [
+            "bronze",
+            "silver",
+            "gold",
+            "master"
+          ]
+        },
+        "prerequisiteIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 0
+        },
+        "cardIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 1
+        },
+        "questionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+          },
+          "minItems": 10
+        },
+        "passRatio": {
+          "const": 0.8
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "rankId",
+        "prerequisiteIds",
+        "cardIds",
+        "questionIds",
+        "passRatio"
+      ],
+      "additionalProperties": false
+    },
+    "courses": {
+      "type": "object",
+      "properties": {
+        "rulesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "ranks": {
+          "const": [
+            "bronze",
+            "silver",
+            "gold",
+            "master"
+          ]
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/level"
+          },
+          "minItems": 4
+        }
+      },
+      "required": [
+        "rulesVersion",
+        "ranks",
+        "levels"
+      ],
+      "additionalProperties": false
+    },
+    "alias": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "law",
+            "keyword"
+          ]
+        },
+        "term": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pinyin": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z]+$"
+        },
+        "initials": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z]+$"
+        },
+        "lawId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        }
+      },
+      "required": [
+        "kind",
+        "term",
+        "pinyin",
+        "initials",
+        "lawId"
+      ],
+      "additionalProperties": false
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/alias"
+      },
+      "minItems": 0
+    },
+    "migration": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "article",
+            "card",
+            "question"
+          ]
+        },
+        "oldId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "newIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "change": {
+          "enum": [
+            "same",
+            "revised",
+            "removed"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "kind",
+        "oldId",
+        "newIds",
+        "change",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "migrations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/migration"
+      },
+      "minItems": 0
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "reviewerId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "role": {
+          "enum": [
+            "proofreader",
+            "legal_reviewer",
+            "lawyer",
+            "content_owner"
+          ]
+        },
+        "reviewedAt": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date"
+        },
+        "objectDigest": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "reviewerId",
+        "role",
+        "reviewedAt",
+        "objectDigest"
+      ],
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        },
+        "objectKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "objectDigest": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "decision": {
+          "const": "approved"
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/review"
+          },
+          "minItems": 1
+        },
+        "sampledObjectKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "riskAssessment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unsampledSummary": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "objectKey",
+        "objectDigest",
+        "decision",
+        "reviews",
+        "sampledObjectKeys",
+        "riskAssessment",
+        "unsampledSummary"
+      ],
+      "additionalProperties": false
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/approval"
+      },
+      "minItems": 1
+    }
+  }
+}

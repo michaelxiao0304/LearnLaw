@@ -10,7 +10,7 @@
 
 设备内保存收藏、答题选项和结果、错题状态、完成的知识卡、每日题目分配、学习日期及记录时区；另保存字号、语速、提醒开关与时间和免责声明确认版本。其用途是恢复阅读偏好和学习状态。关卡保存当前题目、已选择选项和提交结果，以支持退出恢复。设置可关闭学习日期记录，关闭后不再新增连续学习日期，但功能所需的答题、错题、收藏与关卡进度继续保存在本机。没有服务端用户档案。
 
-这些记录保留至用户主动清除或卸载应用。设置中提供分别清除学习记录和收藏的入口，执行前确认。卸载通常移除本机数据；系统备份恢复可能恢复此前记录。系统备份、备份保留与删除由设备及 Apple 账户设置管理，应用不提供多端云同步。
+这些记录保留至用户主动清除或卸载应用。打开已有数据库前会创建本地升级保护副本，保护升级前的记录；清除学习记录或收藏时同步删除该副本，不会静默恢复已经清除的记录。设置中提供分别清除学习记录和收藏的入口，执行前确认。卸载通常移除本机数据；系统备份恢复可能恢复此前记录。系统备份、备份保留与删除由设备及 Apple 账户设置管理，应用不提供多端云同步。
 
 ## 系统能力
 
@@ -25,3 +25,6 @@
 ## Apple 隐私清单对应
 
 `ios/LawSense/PrivacyInfo.xcprivacy` 声明不追踪、不收集上传数据；UserDefaults 仅访问本应用的阅读设置和免责声明记录，使用 `NSPrivacyAccessedAPICategoryUserDefaults` / `CA92.1`。文件属于正式与开发两个 target 的资源，最终归档仍须复查第三方依赖和 SDK 的行为。本清单不能替代 App Store Connect 隐私问卷或公开隐私政策 URL。
+
+
+核对日期：2026-10-31。[Apple 的 UserDefaults 理由说明](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitypereasons) 将 CA92.1 用于仅本应用可访问的偏好；本项目的设置与声明确认符合该用途。依据 [App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/)，仅设备内处理的数据与开发者收集数据应区分。配置支持邮箱后，发布负责人须核对实际邮件接收、保留、用途及自愿反馈披露例外，不能机械照抄“不收集任何数据”的问卷答案。
